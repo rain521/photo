@@ -1,0 +1,39 @@
+前端破局 AI 应用开发，特邀字节大佬分享字节系 AI 场景落地应用与 AI 引擎编排流程【内部培训版】
+直播回放：https://qmdqi.xetlk.com/sl/4FrRpy
+飞书链接：https://u19tul1sz9g.feishu.cn/docx/SBf8dcstdo0wn8xwsjLc5xkPnch   密码：256#K788
+
+【前端智能体 Ollama + Deepseek AI 开发平台全链路设计与实践，特邀字节专家分享前端人高光时刻】
+直播回放：https://bcsnv.xetslk.com/sl/3Rt5lA
+飞书链接：https://u19tul1sz9g.feishu.cn/docx/QxXfdLFEXoHaUOxr0SccljC7nkg?from=from_copylink   密码：3@5277L9
+
+【类扣子、Dify AI 应用引擎架构设计与实践，前端专家助你武装 AI 开发平台业务与架构思维】
+直播回放：https://bcsnv.xetslk.com/sl/D0ywp
+飞书链接：https://u19tul1sz9g.feishu.cn/docx/ZqW4dMKKcoZNzpxcUWbcxMj9nmg   密码：X#272626
+
+👝 基于 yjs 智能文档、AI 代码编辑器、数字孪生编辑器协同实战，高级前端专家带你掌握百万年薪级项目架构亮点
+直播回放：https://e2gaa.hk.xet.citv.cn/sl/4mleZs
+飞书链接：https://u19tul1sz9g.feishu.cn/docx/FEUMdqYZooicN8xqXzycyhlDn2f   密码：43M5262@
+
+🎠 前端 AI 智能体类 Dify  AI 开发平台全链路设计与核心重难点，前端专家带你用 AI 业务经验错位竞争
+飞书链接：https://u19tul1sz9g.feishu.cn/docx/CtdodPsooolIh5xFm5gcItmUnvf   密码：8j56414@
+回放链接：https://e2gaa.hk.xet.citv.cn/sl/1QxEJb
+
+🦗 前端专家必会类扣子  AI Agent 平台全链路架构设计与实践，高级前端专家助你借 AI 业务润色高分简历
+直播回放：https://e2gaa.hk.xet.citv.cn/sl/4lceaY
+飞书链接：https://u19tul1sz9g.feishu.cn/docx/Yx4xdRdUKoA9R7xSle3cbBuSnnL   密码：574191@C
+
+🐗 Nodejs 全栈 AI 开发极速进阶实战，高级前端专家帮你补足前端 AI 面试重难点
+直播回放：https://e2gaa.hk.xet.citv.cn/sl/3Tc9Ya
+飞书链接：https://u19tul1sz9g.feishu.cn/docx/ZPJUdIatYoIODwx0Z3wcLsaCn7b   密码：67v@7248
+
+🌴 基于 electron、langgraph 大厂 AI 工作流编排应用架构揭秘，AI 前端全栈架构师高分项目重难点解析
+直播回放：https://e2gaa.xetslk.com/sl/1VJ7cG
+飞书链接：https://u19tul1sz9g.feishu.cn/docx/SpRndJeino9v7exkkhgcazLqndf   密码：517B2@39
+
+前端监控 AI 智能化全链路大厂最佳实践，字节架构师：未来 AI 将完全取代初中级前后端开发
+直播回放：https://e2gaa.xetslk.com/sl/SGCfN
+飞书链接：https://u19tul1sz9g.feishu.cn/docx/Feq8dyeGEob755xF25wcfpmfn8g   密码：41J9253&
+
+🐘 AI 前端开发 Typescript、Zod 极速进阶与最佳实践，字节面试官：这是当下招聘 AI 全栈最基本要求
+直播回放：https://e2gaa.xetslk.com/sl/37bBdS
+飞书链接：https://u19tul1sz9g.feishu.cn/docx/CKN4d6HkDoG3fNxqXKic7XNdnrb   密码：9#j36953

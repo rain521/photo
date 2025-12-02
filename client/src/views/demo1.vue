@@ -7,91 +7,96 @@
   </div>
 </template>
 <script setup lang="ts">
+// #修改数据 [使用 JSON]
+import { Group, IUIInputData, Leafer } from "leafer-ui";
+
+const leafer = new Leafer({ view: window });
+
+const group = new Group();
+
+leafer.add(group);
+
+const json: IUIInputData = {
+  x: 20,
+  y: 20,
+  children: [
+    {
+      tag: "Rect",
+      x: 100,
+      y: 100,
+      width: 200,
+      height: 200,
+      fill: "#32cd79",
+      draggable: true,
+    origin: 'center',
+      shadow: {
+        x: 10,
+        y: -10,
+        blur: 20,
+        color: "#FF0000AA",
+      },
+      innerShadow: {
+        x: 10,
+        y: 5,
+        blur: 20,
+        color: "#FF0000AA",
+      },
+    },
+    {
+      tag: "Rect",
+      x: 100,
+      y: 100,
+      width: 100,
+      height: 100,
+      stroke: "#32cd79",
+      strokeWidth: 2,
+      dashPattern: [6, 6], // 绘制虚线
+    },
+    {
+      tag: "Text",
+      x: 100,
+      y: 100,
+      text: "Hello, World!",
+      fontSize: 20,
+      fill: "#32cd79",
+      draggable: true,
+    },
+    {
+      tag: "Ellipse",
+      x: 100,
+      y: 100,
+      width: 100,
+      height: 100,
+      fill: "#32cd79",
+      draggable: true,
+    },
+    {
+      tag: "Line",
+      x: 100,
+      y: 100,
+      stroke: "#32cd79",
+      strokeWidth: 5, // 描边的宽度
+      strokeWidthFixed: true, // 是否固定线宽（不受视图放大影响）
+      strokeAlign: "center", // 描边的对齐方式 'inside'、'center' 、'outside'
+      strokeCap: "round", // 描边的端点形状 'none' 、'round' 、'square'
+      strokeJoin: "round", // 描边的拐角处理 'miter' 、'bevel' 、'round'
+      dashPattern: [15, 15], // 绘制虚线
+      dashOffset: 15, // 虚线描边的起点偏移值
+      draggable: true,
+    },
+  ],
+};
+
+group.set(json);
 </script>
-<style scoped>
+<style scoped lang="scss">
 .demo1-container {
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
   box-sizing: border-box;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-}
-
-.demo1-content {
-  text-align: center;
-  max-width: 800px;
-  width: 100%;
-  padding: 40px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.demo-title {
-  font-size: 48px;
-  margin: 0 0 20px 0;
-  color: #333;
-  font-weight: 700;
-}
-
-.demo-description {
-  font-size: 18px;
-  color: #666;
-  margin: 0;
-  line-height: 1.6;
-}
-
-/* 平板设备 */
-@media screen and (max-width: 768px) {
-  .demo1-content {
-    padding: 30px;
-  }
-
-  .demo-title {
-    font-size: 36px;
-    margin-bottom: 15px;
-  }
-
-  .demo-description {
-    font-size: 16px;
-  }
-}
-
-/* 移动设备 */
-@media screen and (max-width: 480px) {
-  .demo1-container {
-    padding: 15px;
-  }
-
-  .demo1-content {
-    padding: 25px 20px;
-    border-radius: 8px;
-  }
-
-  .demo-title {
-    font-size: 28px;
-    margin-bottom: 12px;
-  }
-
-  .demo-description {
-    font-size: 14px;
-  }
-}
-
-/* 小屏移动设备 */
-@media screen and (max-width: 360px) {
-  .demo1-content {
-    padding: 20px 15px;
-  }
-
-  .demo-title {
-    font-size: 24px;
-  }
-
-  .demo-description {
-    font-size: 13px;
-  }
 }
 </style>
