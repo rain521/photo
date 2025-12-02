@@ -1,0 +1,56 @@
+// SCSS 混合（Mixins）文件
+
+// 响应式断点混合
+@mixin mobile {
+  @media screen and (max-width: $breakpoint-mobile) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media screen and (max-width: $breakpoint-tablet) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media screen and (min-width: $breakpoint-desktop) {
+    @content;
+  }
+}
+
+// 小屏移动设备
+@mixin small-mobile {
+  @media screen and (max-width: 360px) {
+    @content;
+  }
+}
+
+// Flexbox 居中混合
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// 文本省略混合
+@mixin text-ellipsis($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// 卡片样式混合
+@mixin card-style {
+  background: $white;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-card;
+}
+

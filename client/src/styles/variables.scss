@@ -1,0 +1,50 @@
+// SCSS 变量示例文件
+// 颜色变量
+$primary-color: #667eea;
+$secondary-color: #764ba2;
+$text-color: #333;
+$text-light: #666;
+$white: #ffffff;
+$background-light: #f5f7fa;
+$background-dark: #242424;
+
+// 断点变量
+$breakpoint-mobile: 480px;
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1024px;
+
+// 间距变量
+$spacing-xs: 10px;
+$spacing-sm: 15px;
+$spacing-md: 20px;
+$spacing-lg: 30px;
+$spacing-xl: 40px;
+
+// 字体大小变量
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-md: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 24px;
+$font-size-xxl: 32px;
+
+// 圆角变量
+$border-radius-sm: 8px;
+$border-radius-md: 12px;
+$border-radius-lg: 25px;
+
+// 阴影变量
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 15px rgba(0, 0, 0, 0.2);
+$shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.3);
+$shadow-card: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+// 渐变背景
+$gradient-light: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
+// 字体粗细
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
