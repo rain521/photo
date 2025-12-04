@@ -1,20 +1,22 @@
 // SCSS 混合（Mixins）文件
+// 使用 @use 导入变量
+@use './variables' as vars;
 
 // 响应式断点混合
 @mixin mobile {
-  @media screen and (max-width: $breakpoint-mobile) {
+  @media screen and (max-width: vars.$breakpoint-mobile) {
     @content;
   }
 }
 
 @mixin tablet {
-  @media screen and (max-width: $breakpoint-tablet) {
+  @media screen and (max-width: vars.$breakpoint-tablet) {
     @content;
   }
 }
 
 @mixin desktop {
-  @media screen and (min-width: $breakpoint-desktop) {
+  @media screen and (min-width: vars.$breakpoint-desktop) {
     @content;
   }
 }
@@ -49,8 +51,8 @@
 
 // 卡片样式混合
 @mixin card-style {
-  background: $white;
-  border-radius: $border-radius-md;
-  box-shadow: $shadow-card;
+  background: vars.$white;
+  border-radius: vars.$border-radius-md;
+  box-shadow: vars.$shadow-card;
 }
 

@@ -13,9 +13,11 @@ const app = new App({
     editor: {
         lockRatio: true,
         beforeScale({ target, scaleX, scaleY }) {
-            if (target.width * scaleX < 20 || target.height * scaleY < 20) {
-                const scale = Math.min(20 / target.width, 20 / target.height)
-                return { scaleX: scale, scaleY: scale }
+            if (target && target.width !== undefined && target.height !== undefined) {
+                if (target.width * scaleX < 20 || target.height * scaleY < 20) {
+                    const scale = Math.min(20 / target.width, 20 / target.height)
+                    return { scaleX: scale, scaleY: scale }
+                }
             }
             return true
         }

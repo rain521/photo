@@ -3,11 +3,27 @@ import type { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
+    path: '/login',
+    name: 'login',
+    component: () => import('../views/Login.vue'),
+    meta: {
+      title: '登录'
+    }
+  },
+  {
     path: '/',
+    name: 'home',
+    component: () => import('../views/home/index.vue'),
+    meta: {
+      title: '首页'
+    }
+  },
+  {
+    path: '/demo1',
     name: 'demo1',
     component: () => import('../views/demo1.vue'),
     meta: {
-      title: 'Demo1 - 首页'
+      title: 'Demo1'
     }
   },
   {

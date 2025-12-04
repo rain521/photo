@@ -22,9 +22,11 @@
     "@leafer-in/state": "^1.11.2",
     "@leafer-in/text-editor": "^1.11.2",
     "@leafer-in/view": "^1.11.2",
+    "axios": "^1.13.2",
     "leafer-draw": "^1.11.2",
     "leafer-editor": "^1.11.2",
     "leafer-ui": "^1.11.2",
+    "pinia": "^3.0.4",
     "vue": "^3.4.37",
     "vue-router": "^4.6.3"
   },
@@ -32,6 +34,7 @@
     "@types/node": "^20.8.7",
     "@vitejs/plugin-vue": "^5.1.2",
     "sass": "^1.94.2",
+    "terser": "^5.44.1",
     "typescript": "^5.5.3",
     "vite": "^5.4.1",
     "vue-tsc": "^2.0.29"
