@@ -12,6 +12,7 @@
   "dependencies": {
     "@leafer-in/animate": "^1.11.2",
     "@leafer-in/arrow": "^1.11.2",
+    "@leafer-in/bright": "^1.11.2",
     "@leafer-in/color": "^1.11.2",
     "@leafer-in/editor": "^1.11.2",
     "@leafer-in/flow": "^1.11.2",
