@@ -99,15 +99,7 @@ const navigateTo = (path: string) => {
 }
 // 退出登录
 const handleLogout = async () => {
-  try {
-    appStore.showLoading('退出中...')
-    await userStore.logout()
-    router.push('/login')
-  } catch (error) {
-    console.error('退出登录失败:', error)
-  } finally {
-    appStore.hideLoading()
-  }
+  userStore.logout()
 }
 
 // 显示关于信息

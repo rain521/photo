@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { request } from '@/api'
+import router from '@/router'
 
 // 用户信息接口
 export interface UserInfo {
@@ -68,6 +69,7 @@ export const useUserStore = defineStore('user', () => {
   async function logout() {
     setToken('')
     setUserInfo(null)
+    router.push('/login')
   }
 
   /**
@@ -92,6 +94,7 @@ export const useUserStore = defineStore('user', () => {
    */
   function initUser() {
     const savedToken = localStorage.getItem('token')
+    console.log(savedToken)
     if (savedToken) {
       token.value = savedToken
       // 如果有 token，尝试获取用户信息
@@ -99,6 +102,8 @@ export const useUserStore = defineStore('user', () => {
         // 如果获取失败，清除 token
         setToken('')
       })
+    }else{
+      logout()
     }
   }
 
