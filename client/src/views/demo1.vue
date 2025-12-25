@@ -1,102 +1,86 @@
 <template>
-  <div class="demo1-container">
-    <div class="demo1-content">
-      <h1 class="demo-title">Demo 1</h1>
-      <p class="demo-description">这是一个响应式页面示例</p>
+    <div class="demo1-container">
+        <div class="demo1-content">
+            <h1 class="demo-title">Demo 1</h1>
+            <p class="demo-description">这是一个响应式页面示例</p>
+            <Editor v-if="documentXml" :page="documentXml.pages.page[0]" class="editor-section" />
+            <div v-else class="loading-placeholder">
+                <p>正在加载数据...</p>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 <script setup lang="ts">
-// #修改数据 [使用 JSON]
-import { Group, IUIInputData, Leafer } from "leafer-ui";
+import { request } from "../api";
+import { onMounted, ref } from "vue";
+import Editor from "../components/editor.vue";
+onMounted(() => {
+    getXml();
+});
 
-const leafer = new Leafer({ view: window });
-
-const group = new Group();
-
-leafer.add(group);
-
-const json: IUIInputData = {
-  x: 20,
-  y: 20,
-  children: [
-    {
-      tag: "Rect",
-      x: 100,
-      y: 100,
-      width: 200,
-      height: 200,
-      fill: "#32cd79",
-      draggable: true,
-    origin: 'center',
-      shadow: {
-        x: 10,
-        y: -10,
-        blur: 20,
-        color: "#FF0000AA",
-      },
-      innerShadow: {
-        x: 10,
-        y: 5,
-        blur: 20,
-        color: "#FF0000AA",
-      },
-    },
-    {
-      tag: "Rect",
-      x: 100,
-      y: 100,
-      width: 100,
-      height: 100,
-      stroke: "#32cd79",
-      strokeWidth: 2,
-      dashPattern: [6, 6], // 绘制虚线
-    },
-    {
-      tag: "Text",
-      x: 100,
-      y: 100,
-      text: "Hello, World!",
-      fontSize: 20,
-      fill: "#32cd79",
-      draggable: true,
-    },
-    {
-      tag: "Ellipse",
-      x: 100,
-      y: 100,
-      width: 100,
-      height: 100,
-      fill: "#32cd79",
-      draggable: true,
-    },
-    {
-      tag: "Line",
-      x: 100,
-      y: 100,
-      stroke: "#32cd79",
-      strokeWidth: 5, // 描边的宽度
-      strokeWidthFixed: true, // 是否固定线宽（不受视图放大影响）
-      strokeAlign: "center", // 描边的对齐方式 'inside'、'center' 、'outside'
-      strokeCap: "round", // 描边的端点形状 'none' 、'round' 、'square'
-      strokeJoin: "round", // 描边的拐角处理 'miter' 、'bevel' 、'round'
-      dashPattern: [15, 15], // 绘制虚线
-      dashOffset: 15, // 虚线描边的起点偏移值
-      draggable: true,
-    },
-  ],
-};
-
-group.set(json);
+const documentXml = ref();
+async function getXml() {
+    const result = await request.get("/fileserves/api/convert/xmlToDocument2", {
+        params: {
+            identifier: "productXml-1d4f053c-5df2-4f60-8fb1-1a5c9d7150df",
+            editorType: "POSTER",
+            patternType: "BOOK",
+            provider: "qiniu",
+        },
+    });
+    if (result) {
+        documentXml.value = result;
+    }
+}
 </script>
 <style scoped lang="scss">
 .demo1-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-  box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.demo1-content {
+    width: 100%;
+    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.demo-title {
+    color: #ffffff;
+    text-align: center;
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+.demo-description {
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.editor-section {
+    width: 100%;
+    height: 70vh;
+    margin-top: 20px;
+}
+
+.loading-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 70vh;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
 }
 </style>

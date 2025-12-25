@@ -53,10 +53,11 @@ export const useUserStore = defineStore('user', () => {
   async function login(phone: string, password: string) {
     try {
       const result = await request.post('/manager/api/customers/authenticate', { phone, password, rememberMe: true, storeId: '1' })
-      console.log(result)
-      setToken(result.message)
-      const info = await request.get<UserInfo>('/manager/api/customers/current')
-      setUserInfo(info)
+      if(result){
+        setToken(result.message)
+        const info = await request.get<UserInfo>('/manager/api/customers/current')
+        setUserInfo(info)
+      }
       return result
     } catch (error) {
       throw error
@@ -81,8 +82,6 @@ export const useUserStore = defineStore('user', () => {
       setUserInfo(info)
       return info
     } catch (error) {
-      console.error('获取用户信息失败:', error)
-      // 如果获取失败，清除 token
       setToken('')
       setUserInfo(null)
       throw error
@@ -94,7 +93,6 @@ export const useUserStore = defineStore('user', () => {
    */
   function initUser() {
     const savedToken = localStorage.getItem('token')
-    console.log(savedToken)
     if (savedToken) {
       token.value = savedToken
       // 如果有 token，尝试获取用户信息

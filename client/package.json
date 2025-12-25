@@ -23,9 +23,11 @@
     "@leafer-in/text-editor": "^1.11.2",
     "@leafer-in/view": "^1.11.2",
     "axios": "^1.13.2",
+    "element-plus": "^2.13.0",
     "leafer-draw": "^1.11.2",
     "leafer-editor": "^1.11.2",
     "leafer-ui": "^1.11.2",
+    "leafer-x-clip-resize-inner-editor": "^1.10.0",
     "pinia": "^3.0.4",
     "vue": "^3.4.37",
     "vue-router": "^4.6.3"

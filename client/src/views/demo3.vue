@@ -13,6 +13,8 @@ onMounted(() => {
   const app = new App({
     view: window,
     fill: "#333",
+    width: 500,  
+    height: 500,
     editor: {
       circle: {},
       point: { cornerRadius: [0, 0, 10, 0] },
@@ -20,7 +22,23 @@ onMounted(() => {
       buttonsFixed: true
     }, // 配置 editor 会自动创建并添加 app.editor 实例、tree 层、sky 层
   });
-
+  
+    // 计算等比缩放比例  
+    const targetWidth = 800;  // 目标宽度  
+    const targetHeight = 600; // 目标高度  
+    const scaleX = targetWidth / 500;  
+    const scaleY = targetHeight / 500;  
+    const scale = Math.min(scaleX, scaleY); // 等比缩放  
+    
+    // 应用缩放到 App  
+    app.scaleX = scale;  
+    app.scaleY = scale;
+    app.tree.scaleX = scale;  
+    app.tree.scaleY = scale;  
+    
+    // 居中显示缩放后的内容  
+    app.tree.x = (500 - 500 * scale) / 2;  
+    app.tree.y = (500 - 500 * scale) / 2;
   const frame = Frame.one(
     {
       // 页面内容
@@ -39,13 +57,15 @@ onMounted(() => {
           {
             editable: true,
             text: "双击编辑文字",
-            fontSize: 20,
+            fontSize: 50,
             fill: "#333",
             resizeFontSize: true,
+            autoHeight: true,
+    textOverflow: 'hide', // 防止溢出  
+    textWrap: 'normal',   // 文本换行  
             cursor: "text", // 鼠标悬停时显示文本光标
-          },
-          100,
-          200
+            // width: 150,
+          }
         ),
       ],
     },
