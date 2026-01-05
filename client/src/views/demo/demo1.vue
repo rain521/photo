@@ -11,9 +11,9 @@
     </div>
 </template>
 <script setup lang="ts">
-import { request } from "../api";
+import { request } from "../../api";
 import { onMounted, ref } from "vue";
-import Editor from "../components/editor.vue";
+import Editor from "../../components/editor.vue";
 onMounted(() => {
     getXml();
 });

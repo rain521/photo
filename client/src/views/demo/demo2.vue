@@ -1,26 +1,22 @@
 <template>
     <el-button type="primary" @click="save()">保存</el-button>
     <div class="demo2-container">
-        <div id="editor-container" style="border: 1px solid #333;"></div>
+        <div ref="editorContainer" style="border: 1px solid #333;"></div>
     </div>
 </template>
 <script setup lang="ts">
-import { request } from "../api";
+import { request } from "../../api";
 import { onMounted, onUnmounted, onBeforeMount, ref } from "vue";
-import { App, Box, Rect, Image, ResizeEvent, IEditorScaleData, Text } from "leafer-ui";
+import { App, Box, Rect, Image, ResizeEvent, IEditorScaleData, Text, PointerEvent, Group, WatchEvent } from "leafer-ui";
 import "@leafer-in/editor"; // 导入图形编辑器插件
 import "@leafer-in/viewport"; // 导入视口插件
+import '@leafer-in/text-editor' // 确保导入文本编辑器  
 import { DragEvent, ZoomEvent } from '@leafer-ui/event'
+import { ContainerWithLevel, page } from "@/interfaces"
 
 let app: App | null = null;
-interface ContainerWithLevel extends Box {
-    __levelData: any;
-    __levelIndex: number;
-    width: number,
-    height: number,
-    x: number,
-    y: number,
-}
+let scale = 1;
+const editorContainer = ref<HTMLElement>();
 onBeforeMount(() => {
     getXml()
 })
@@ -39,10 +35,10 @@ async function getXml() {
         leaferInfo(documentXml.value.pages.page[0]);
     }
 }
-async function leaferInfo(page: any) {
+async function leaferInfo(page: any) { 
     app = new App({
-        view: 'editor-container',
-        ground: {},
+        view: editorContainer.value,
+        ground: {}, // 初始化 ground 层  
         editor: {
             circle: {},
             // point: { cornerRadius: [0, 0, 10, 0] },
@@ -66,10 +62,9 @@ async function leaferInfo(page: any) {
     const editorViewSize = pxToMmWithPixelRatio(app,1500);
     const scaleX = editorViewSize / page.mediabox.width;
     const scaleY = editorViewSize / page.mediabox.height;
-    let scale = Math.min(scaleX, scaleY);
-    console.log(scale)
-    app.width = app.ground.width = page.mediabox.width * scale;
-    app.height = app.ground.height = page.mediabox.height * scale;
+    scale = Math.min(scaleX, scaleY);
+    app.width = page.mediabox.width * scale;
+    app.height = page.mediabox.height * scale;
     if (page.background) {
         if (page.background.type === "Color" && page.background.color) {
             app.fill = page.background.color;
@@ -97,12 +92,11 @@ async function leaferInfo(page: any) {
                     height: app.height
                 },
             });
-            app.ground.add(backgroundRect)
-
             backgroundRect.on(DragEvent.END, () => {
                 page.background.offsetx = backgroundRect.x / backgroundScale;
                 page.background.offsety = backgroundRect.y / backgroundScale;
             });
+            app.ground.add(backgroundRect)
         }
     }
     if (page.levels?.level) {
@@ -204,71 +198,50 @@ async function leaferInfo(page: any) {
             }
             if (level.textbox && level.textbox.geometry) {
                 const fs = pxToMmWithPixelRatio(app as App,level.textbox.style.size * 96/72) * scale;
+                const container = Box.one({
+                    __levelIndex: index,
+                    __levelData: level.textbox,
+                    x: level.textbox.geometry.x * scale,
+                    y: level.textbox.geometry.y * scale,
+                    width: level.textbox.geometry.width * scale,
+                    height: Number(level.textbox.geometry.height * scale),
+                    lockRatio: true,
+                    rotation: -level.textbox.rotation.angle,
+                    origin: 'center', // 设置变换原点为中心  
+                    resizeChildren: true,
+                    editable: true,    // 声明可编辑  
+                    draggable: true,   // 声明可拖拽  
+                });
                 const textbox = Text.one({
+                    __levelIndex: index,
+                    __levelData: level.textbox,
                     editable: true,
                     text: level.textbox.text,
                     fontSize: fs,
                     fill: level.textbox.style.color,
-                    fontFamily: level.textbox.style.fontuuid,
+                    fontFamily: level.textbox.fontuuid,
                     fontWeight: level.textbox.style.bold ? 'bold' : undefined,
                     italic: level.textbox.style.italic,
-                    // letterSpacing:level.textbox.style.letterspacing * scale,
-                    // lineHeight:level.textbox.style.lineheight * scale,
+                    letterSpacing:level.textbox.style.letterspacing * scale,
                     textAlign:level.textbox.style.align,
                     writingMode: level.textbox.style.writingmode == 'horizontal-tb' ? 'x' : 'y',
                     resizeFontSize: true,
                     isOverflow: false,
                     cursor: "text", // 鼠标悬停时显示文本光标
-                    
-                    // 位置和变换
-                    width: level.textbox.geometry.width * scale,
-                    height: level.textbox.geometry.height * scale,
-                    x: level.textbox.geometry.x * scale,  
-                    y: level.textbox.geometry.y * scale,  
-                    origin: 'center', // 设置变换原点为中心  
-                    rotation: -level.textbox.rotation.angle || 0,  
+
+                    autoHeight: true,
+                    textEditing: false,  // 启用编辑模式  
+                    textOverflow: 'hide', // 防止溢出  
+                    textWrap: 'normal',   // 文本换行  
                 });
-                app?.tree.add(textbox);
+                // 双击进入编辑模式  
+                textbox.on('pointer:double', () => {  
+                    textbox.textEditing = true;
+                })
+                container.add(textbox);
+                app?.tree.add(container);
             }
         })
-    }
-    if (app.editor) {
-        app.editor.config.beforeScale = (data: any) => {
-            if (app?.editor.multiple) {
-                app?.editor.list.forEach((container: any) => {
-                    levelDataUpdate(container, scale)
-                });
-            } else {
-                levelDataUpdate(data.target, scale);
-            }
-        };
-        app.editor.config.beforeMove = (data: any) => {
-            if (app?.editor.multiple) {
-                app?.editor.list.forEach((container: any) => {
-                    levelDataUpdate(container, scale)
-                });
-            } else {
-                levelDataUpdate(data.target, scale);
-            }
-        };
-        app.editor.config.beforeRotate = (data: any) => {
-            if (app?.editor.multiple) {
-                app?.editor.list.forEach((container: any) => {
-                    levelDataUpdate(container, scale)
-                });
-            } else {
-                levelDataUpdate(data.target, scale);
-            }
-        };
-    }
-}
-function levelDataUpdate(container: ContainerWithLevel, scale: number) {
-    if (container && container.__levelData) {
-        container.__levelData.geometry.width = container.width / scale;
-        container.__levelData.geometry.height = container.height / scale;
-        container.__levelData.geometry.x = container.x / scale;
-        container.__levelData.geometry.y = container.y / scale;
-        container.__levelData.rotation.angle = container.rotation || 0;
     }
 }
 // 考虑设备像素比的转换  
@@ -286,8 +259,58 @@ onUnmounted(() => {
 });
 
 function save() {
-    console.log(documentXml.value.pages.page[0])
+    // getPage(app,scale)
+    // console.log(app.ground.children)
+    // console.log(documentXml.value.pages.page[0])
 }
+// function getPage(app: App, scale: number){
+//     console.log(app)
+//     const page = documentXml.value.pages.page[0];
+    
+//     if (page.background) {
+//         if(app.fill){
+//             page.background.color = app.fill;
+//             page.background.type = "Color"
+//         }
+//         if(app.ground && app.ground.children && app.ground.children.length > 0){
+//             const background:any = app.ground.children[0];
+//             page.background.resource = {
+//                 identifier: background.fill.url,
+//             }
+//             page.background.offsetx = background.x / scale;
+//             page.background.offsety = background.y / scale;
+//         }
+//         if (page.background.type === "Pic" && page.background.resource?.identifier) {
+//             // 添加方格背景层  
+//             const backgroundScaleX = app.width / page.background.imageInfo.width;
+//             const backgroundScaleY = app.height / page.background.imageInfo.height;
+//             const backgroundScale = Math.max(backgroundScaleX, backgroundScaleY);
+//             const backgroundRect: any = Rect.one({
+//                 fill: {
+//                     type: 'image',
+//                     url: page.background.resource?.identifier,
+//                     mode: 'cover',
+//                 },
+//                 width: page.background.imageInfo.width * backgroundScale,
+//                 height: page.background.imageInfo.height * backgroundScale,
+//                 x: page.background.offsetx * backgroundScale,
+//                 y: page.background.offsety * backgroundScale,
+//                 draggable: false,
+//                 dragBounds: {
+//                     x: 0,
+//                     y: 0,
+//                     width: app.width,
+//                     height: app.height
+//                 },
+//             });
+//             backgroundRect.on(DragEvent.END, () => {
+//                 page.background.offsetx = backgroundRect.x / backgroundScale;
+//                 page.background.offsety = backgroundRect.y / backgroundScale;
+//             });
+//             app.ground.add(backgroundRect)
+//         }
+//     }
+// }
 </script>
 <style scoped lang="scss">
 .demo2-container {
@@ -297,4 +320,18 @@ function save() {
     height: 100vh;
     background: #f5f5f5;
 }
+
+
+
+@font-face {
+    font-family: "font_44318eae_94c2_11ea_8a6f_0242ac140003";
+    font-style:  normal ;
+    font-weight:  400 ;
+    src:
+        url("https://font-dev.momentsgocdn.com/44318eae-94c2-11ea-8a6f-0242ac140003-NORMAL.woff2") format("WOFF2") ,
+        url("https://font-dev.momentsgocdn.com/44318eae-94c2-11ea-8a6f-0242ac140003-NORMAL.woff") format("WOFF") ;
+    font-feature-settings: 'kern' 0;
+}
+
+
 </style>

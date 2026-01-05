@@ -21,7 +21,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/demo1',
     name: 'demo1',
-    component: () => import('../views/demo1.vue'),
+    component: () => import('../views/demo/demo1.vue'),
     meta: {
       title: 'Demo1'
     }
@@ -29,7 +29,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/demo2',
     name: 'demo2',
-    component: () => import('../views/demo2.vue'),
+    component: () => import('../views/demo/demo2.vue'),
     meta: {
       title: 'Demo2 - 首页'
     }
@@ -37,7 +37,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/demo3',
     name: 'demo3',
-    component: () => import('../views/demo3.vue'),
+    component: () => import('../views/demo/demo3.vue'),
     meta: {
       title: 'Demo3 - 首页'
     }
@@ -45,9 +45,17 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/demo4',
     name: 'demo4',
-    component: () => import('../views/demo4.vue'),
+    component: () => import('../views/demo/demo4.vue'),
     meta: {
       title: 'Demo4 - 首页'
+    }
+  },
+  {
+    path: '/editor',
+    name: 'editor',
+    component: () => import('../views/editor/index.vue'),
+    meta: {
+      title: '编辑器'
     }
   },
   {
