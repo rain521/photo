@@ -49,6 +49,24 @@ const routers = [
                     navPath: "/user",
                 },
             },
+            {
+                path: "/image",
+                name: "image",
+                component: () => import("@/views/template/image/image.vue"),
+                meta: {
+                    title: "图片",
+                    navPath: "/image",
+                },
+            },
+            {
+                path: "/imageDetails",
+                name: "imageDetails",
+                component: () => import("@/views/template/image/image-details.vue"),
+                meta: {
+                    title: "图片详情",
+                    navPath: "/image",
+                },
+            },
         ],
     },
     {

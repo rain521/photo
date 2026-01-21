@@ -53,9 +53,21 @@ const navList = ref([
             },
         ],
     },
+    {
+        icon: "icon-zhaopianku",
+        name: "模板",
+        authorities: null,
+        children: [
+            {
+                name: "图片",
+                router: "/image",
+            },
+        ],
+    },
 ]);
 onBeforeMount(() => {
     //初始化路径展开
+    console.log(thisRoute.value)
     for (let i = 0; i < navList.value.length; i++) {
         let nav = navList.value[i];
         if (!nav.children) {
@@ -69,6 +81,12 @@ onBeforeMount(() => {
                 }
             });
         }
+    }
+});
+watch(route, (to, from) => {
+    thisRoute.value = to.meta.navPath;
+    if (thisRoute.value == "/") {
+        thisRoute.value = "/user";
     }
 });
 
