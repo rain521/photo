@@ -17,7 +17,7 @@ import { ClassifyModule } from './classify/classify.module';
 @Module({
     imports: [
         ConfigModule.forRoot({
-            envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
+            envFilePath: '.env',
             isGlobal: true,
         }),
         TypeOrmModule.forRootAsync({
