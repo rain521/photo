@@ -14,8 +14,8 @@ export class OssService {
         const rawRegion = String(this.configService.get('OSS_REGION') || '').replace(/^'+|'+$/g, '').trim();
         const region = rawRegion.replace(/^oss[-_]?/i, '').trim();
         const bucket = String(this.configService.get('OSS_BUCKET') || '').replace(/^'+|'+$/g, '').trim();
-        const accessKeyId = String(this.configService.get('OSS_ACCESS_KEY_ID') || '').replace(/^'+|'+$/g, '').trim();
-        const accessKeySecret = String(this.configService.get('OSS_ACCESS_KEY_SECRET') || '').replace(/^'+|'+$/g, '').trim();
+        const accessKeyId = String(this.configService.get('KEY_ID') || '').replace(/^'+|'+$/g, '').trim();
+        const accessKeySecret = String(this.configService.get('KEY_SECRET') || '').replace(/^'+|'+$/g, '').trim();
 
         const endpoint = `oss-${region}.aliyuncs.com`;
 
@@ -34,8 +34,8 @@ export class OssService {
     async generateUploadToken() {
         // 初始化STS客户端
         let sts = new STS({
-            accessKeyId: this.configService.get('OSS_ACCESS_KEY_ID'),  // 从环境变量中获取RAM用户的AccessKey ID
-            accessKeySecret: this.configService.get('OSS_ACCESS_KEY_SECRET') // 从环境变量中获取RAM用户的AccessKey Secret
+            accessKeyId: this.configService.get('KEY_ID'),  // 从环境变量中获取RAM用户的AccessKey ID
+            accessKeySecret: this.configService.get('KEY_SECRET') // 从环境变量中获取RAM用户的AccessKey Secret
         });
 
         // 调用assumeRole接口获取STS临时访问凭证
