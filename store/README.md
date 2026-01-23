@@ -25,3 +25,15 @@ npm run build
 ```sh
 https://element-plus.org/zh-CN/component/button.html
 ```
+
+### 项目部署
+npm run build
+
+scp -r ./dist/* root@139.224.101.218:/home/store/
+
+密码：tao22Ting
+
+<!-- 修改nginx配置 -->
+sudo vim /etc/nginx/sites-available/vue-app
+sudo nginx -t
+sudo systemctl reload nginx
