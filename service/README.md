@@ -96,3 +96,18 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+## 线上
+
+# 1. 先停止当前应用
+pm2 stop service
+
+# 2. 重新构建项目（如果修改了 .env 或 TypeScript 文件）
+npm run build
+
+# 3. 重新启动
+pm2 start dist/main.js --name service
+
+# 4. 查看实时日志，确认连接错误是否解决
+pm2 logs service --lines 50

@@ -2,14 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import { ElMessage } from "element-plus";
 const routers = [
     {
-        path: "/demo",
-        name: "demo",
-        component: () => import("@/views/demo/demo.vue"),
-        meta: {
-            title: "demo",
-        },
-    },
-    {
         path: "/login",
         name: "login",
         component: () => import("@/views/login/login.vue"),
