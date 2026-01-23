@@ -67,6 +67,24 @@ const routers = [
                     navPath: "/image",
                 },
             },
+            {
+                path: "/classify",
+                name: "classify",
+                component: () => import("@/views/template/classify/classify.vue"),
+                meta: {
+                    title: "分类",
+                    navPath: "/classify",
+                },
+            },
+            {
+                path: "/classifyDetails",
+                name: "classifyDetails",
+                component: () => import("@/views/template/classify/classify-details.vue"),
+                meta: {
+                    title: "分类详情",
+                    navPath: "/classify",
+                },
+            },
         ],
     },
     {

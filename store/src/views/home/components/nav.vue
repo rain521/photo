@@ -59,6 +59,10 @@ const navList = ref([
         authorities: null,
         children: [
             {
+                name: "分类",
+                router: "/classify",
+            },
+            {
                 name: "图片",
                 router: "/image",
             },
