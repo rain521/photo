@@ -35,5 +35,9 @@ scp -r ./dist/* root@139.224.101.218:/home/store/
 
 <!-- 修改nginx配置 -->
 sudo vim /etc/nginx/sites-available/vue-app
+按 i 进入编辑模式。
+编辑完成后：按 Esc → 输入 :wq → 按 Enter 保存退出。
+放弃修改：按 Esc → 输入 :q! → 按 Enter。
+
 sudo nginx -t
 sudo systemctl reload nginx
