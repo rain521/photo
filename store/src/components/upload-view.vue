@@ -34,20 +34,40 @@ const beforeUpload = async (file) => {
         return false;
     }
     loading.value = true;
+    const oss = await axios.get("/api/oss",{params:{dir:props.targetDir}});
+    console.log(oss)
     let formData = new FormData();
-    formData.append("files", file, file.webkitRelativePath || file.name);
-    if(props.targetDir){
-        formData.append("targetDir", props.targetDir);
-    }
+    formData.append("success_action_status", "200");
+    formData.append("policy", oss.data.policy);
+    formData.append("x-oss-signature", oss.data.signature);
+    formData.append("x-oss-signature-version", "OSS4-HMAC-SHA256");
+    formData.append("x-oss-credential", oss.data.x_oss_credential);
+    formData.append("x-oss-date", oss.data.x_oss_date);
+    formData.append("key", oss.data.dir + file.name); // 文件名
+    formData.append("x-oss-security-token", oss.data.security_token);
+    // formData.append("callback", oss.data.callback);  // 添加回调参数
+    formData.append("file", file); // file 必须为最后一个表单域
+
+    await axios.post(oss.data.host, formData);
+    emits("uploadSuccess", oss.data.host + '/' + oss.data.dir + file.name);
+    loading.value = false;
+
+
+    // let formData = new FormData();
+    // formData.append("files", file, file.webkitRelativePath || file.name);
+    // if(props.targetDir){
+    //     formData.append("targetDir", props.targetDir);
+
+    // }
     
-    const oss = await axios.post("/api/oss/upload-folder",formData);
-    if(oss.status === 200 || oss.status === 201){
-        emits("uploadSuccess", oss.data.uploaded[0].url);
-        loading.value = false;
-    }else{
-        ElMessage.error("上传失败");
-        loading.value = false;
-    }
+    // const oss = await axios.post("/api/oss/upload-folder",formData);
+    // if(oss.status === 200 || oss.status === 201){
+    //     emits("uploadSuccess", oss.data.uploaded[0].url);
+    //     loading.value = false;
+    // }else{
+    //     ElMessage.error("上传失败");
+    //     loading.value = false;
+    // }
     return false; // 阻止默认上传行为
 };
 </script>

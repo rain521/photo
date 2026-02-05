@@ -30,7 +30,7 @@ export default ({mode})=>{
       proxy: {
         '/api/': { // 请求接口中要替换的标识
           target: 'http://localhost:3000', // 代理目标地址
-        //   target: 'http://139.224.101.218:3000', // 代理目标地址
+        //   target: 'http://www.cytp.cc', // 代理目标地址
           changeOrigin: true, // 是否允许跨域
           secure: true,
           // rewrite: (path) => path.replace(/^\/api/, '')

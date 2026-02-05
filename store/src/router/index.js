@@ -102,7 +102,6 @@ router.beforeEach((to, from, next) => {
         document.title = to.meta.title;
     }
     let _user = localStorage.getItem("photo-mi-store-user");
-    console.log(_user);
     if (_user) {
         const _user1 = JSON.parse(_user);
         if (_user1.user && _user1.user.authorities) {

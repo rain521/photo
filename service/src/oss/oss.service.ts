@@ -31,7 +31,7 @@ export class OssService {
     /**
      * 生成上传凭证（前端直传）
      */
-    async generateUploadToken() {
+    async generateUploadToken(dir:string | null) {
         // 初始化STS客户端
         let sts = new STS({
             accessKeyId: this.configService.get('KEY_ID'),  // 从环境变量中获取RAM用户的AccessKey ID
@@ -124,7 +124,7 @@ export class OssService {
             x_oss_credential: credential,
             x_oss_date: formattedDate,
             signature: signature,
-            dir: 'user-dir', // 指定上传到OSS的文件前缀，可选
+            dir: dir ? dir+'/' : '', // 指定上传到OSS的文件前缀，可选
             security_token: client.options.stsToken
         };
     }

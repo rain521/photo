@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UploadedFiles, UseInterceptors, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, UploadedFiles, UseInterceptors, Delete, Param, Query } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import { OssService } from './oss.service';
@@ -8,8 +8,8 @@ export class OssController {
     constructor(private readonly ossService: OssService) {}
     
     @Get()
-    create() {
-        return this.ossService.generateUploadToken();
+    create(@Query('dir') dir: string) {
+        return this.ossService.generateUploadToken(dir);
     }
 
     @Post('upload-folder')
