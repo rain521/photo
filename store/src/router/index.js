@@ -10,6 +10,14 @@ const routers = [
         },
     },
     {
+        path: "/page",
+        name: "page",
+        component: () => import("@/views/page.vue"),
+        meta: {
+            title: "",
+        },
+    },
+    {
         path: "/",
         name: "home",
         component: () => import("@/views/home/home.vue"),
@@ -128,7 +136,7 @@ router.beforeEach((to, from, next) => {
             next();
         }
     } else {
-        if (to.path == "/login" || to.path == "/" || to.path == "/404") {
+        if (to.path == "/login" || to.path == "/" || to.path == "/404" || to.path == "/page") {
             next();
         } else {
             ElMessage.error("请登录");

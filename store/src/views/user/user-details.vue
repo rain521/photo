@@ -6,25 +6,21 @@
         </el-breadcrumb-item>
     </el-breadcrumb>
     <div class="c-view">
-        <el-form
-        label-position="right"
-        label-width="100px"
-        :model="data"
-        style="max-width: 460px">
+        <el-form label-position="right" label-width="100px" :model="data" style="max-width: 460px">
             <el-form-item label="用户名">
-                <el-input v-model="data.userName" placeholder="用户名"/>
+                <el-input v-model="data.userName" placeholder="用户名" />
             </el-form-item>
             <el-form-item label="密码" v-if="!data.id">
-                <el-input type="password" v-model="data.password" placeholder="密码"/>
+                <el-input type="password" v-model="data.password" placeholder="密码" />
             </el-form-item>
             <el-form-item label="确认密码" v-if="!data.id">
-                <el-input type="password" v-model="data.password1" placeholder="确认密码"/>
+                <el-input type="password" v-model="data.password1" placeholder="确认密码" />
             </el-form-item>
             <el-form-item label="姓名">
-                <el-input v-model="data.lastName" placeholder="姓名"/>
+                <el-input v-model="data.lastName" placeholder="姓名" />
             </el-form-item>
             <el-form-item label="激活状态">
-                <el-switch v-model="data.isActive" active-color="#13ce66" inactive-color="#ff4949"/>
+                <el-switch v-model="data.isActive" active-color="#13ce66" inactive-color="#ff4949" />
             </el-form-item>
         </el-form>
         <div>
@@ -32,11 +28,16 @@
             <el-button type="info" @click="reset">取消</el-button>
         </div>
     </div>
+    <div>
+        <h1>SSE 实时时间推送</h1>
+        <p v-if="error">{{ error }}</p>
+        <div class="typewriter">{{ messages }}</div>
+    </div>
 </template>
 
 <script setup>
 import { ElMessage, ElMessageBox } from "element-plus";
-import { ref, reactive, inject } from "vue";
+import { ref, reactive, inject, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 const axios = inject("$axios");
 const route = useRoute();
@@ -72,7 +73,7 @@ function save() {
         ElMessage.error("用户名不能为空");
         return
     }
-    if(!data.value.id){
+    if (!data.value.id) {
         if (!data.value.password || !data.value.password1) {
             ElMessage.error("密码不能为空");
             return
@@ -116,7 +117,74 @@ function save() {
     }
 }
 function reset() {
-    router.push({ path: "/user" });
+    reader?.cancel()
+    // router.push({ path: "/user" });
 }
+
+const messages = ref("");
+const error = ref(null);
+let eventSource = null;
+let reader = null;
+
+onMounted(async () => {
+    // // 连接后端 SSE 端点
+    // eventSource = new EventSource('http://localhost:3000/api/ai/events');
+    // eventSource.onmessage = (event) => {
+    //     try {
+    //         const data = JSON.parse(event.data);
+    //         messages.value += data.message;
+    //     } catch (e) {
+    //         error.value = '数据解析失败';
+    //     }
+    // };
+
+    // eventSource.onerror = (err) => {
+    //     console.error('SSE 连接错误', err);
+    //     error.value = '连接中断，尝试重连...';
+    //     // 浏览器会自动重连，无需额外处理
+    // };
+
+    eventSource = await fetch('http://localhost:3000/api/ai/events');
+    reader = eventSource.body.getReader(); // 获取读取器
+
+    while (true) {
+        const { done, value } = await reader.read(); // 逐块读取
+        if (done) break;
+        // value 是 Uint8Array，包含当前这一块二进制数据
+        if(value){
+            const data = new TextDecoder().decode(value);
+            console.log(data);
+            messages.value += data;
+        }
+    }
+});
+
+onUnmounted(() => {
+    // 组件销毁时断开连接
+    eventSource?.close();
+});
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.typewriter::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: currentColor;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+</style>

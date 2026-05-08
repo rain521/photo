@@ -14,6 +14,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { PhotoModule } from './photo/photo.module';
 import { OssModule } from './oss/oss.module';
 import { ClassifyModule } from './classify/classify.module';
+import { AiModule } from './ai/ai.module';
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -39,7 +40,8 @@ import { ClassifyModule } from './classify/classify.module';
         AuthModule,
         PhotoModule,
         OssModule,
-        ClassifyModule
+        ClassifyModule,
+        AiModule
     ],
     controllers: [AppController],
     providers: [AppService,

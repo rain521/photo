@@ -9,6 +9,9 @@ async function bootstrap() {
     app.setGlobalPrefix('api');
     app.useGlobalPipes(new ValidationPipe());
 
+    // 启用CORS
+    app.enableCors();
+
     // 获取底层的 Express 实例
     const expressApp = app.getHttpAdapter().getInstance();
     
