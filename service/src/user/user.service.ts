@@ -1,15 +1,18 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
+        private configService: ConfigService,
     ) { }
 
     async create(userData: Partial<User>) {
@@ -76,5 +79,43 @@ export class UserService {
     async findAndCount(query: any): Promise<[User[], number]> {
         const [data, total] = await this.userRepository.findAndCount(query);
         return [data, total];
+    }
+
+
+    async getSessionByCode(code: string) {
+        const appid = this.configService.get<string>('WX_APPID');
+        const secret = this.configService.get<string>('WX_SECRET');
+
+        const url = 'https://api.weixin.qq.com/sns/jscode2session';
+        const { data } = await axios.get(url, {
+            params: {
+                appid,
+                secret,
+                js_code: code,
+                grant_type: 'authorization_code',
+            },
+        });
+
+        if (data.errcode) {
+            throw new HttpException(
+                `微信登录失败: ${data.errmsg}`,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
+        return {
+            openid: data.openid,
+            session_key: data.session_key,
+            unionid: data.unionid, // 只有在满足条件时返回
+        };
+    }
+
+    async findOrCreateByOpenid(openid: string): Promise<User> {
+        let user = await this.userRepository.findOne({ where: { openid } });
+        if (!user) {
+            user = this.userRepository.create({ openid,lastName: '微信用户' });
+            await this.userRepository.save(user);
+        }
+        return user;
     }
 }

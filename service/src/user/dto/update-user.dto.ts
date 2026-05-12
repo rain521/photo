@@ -16,10 +16,13 @@ export class UpdateUserDto {
   @Matches(/^[a-zA-Z0-9_]+$/, { 
     message: '用户名只能包含字母、数字和下划线' 
   })
-  userName: string;
+  userName?: string;
 
   @IsString()
-  lastName: string;
+  lastName?: string;
+
+  @IsString()
+  openid?: string;
   
   @IsBoolean()
   isActive: boolean;

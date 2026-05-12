@@ -34,4 +34,12 @@ export class AuthController {
         const user = await this.userService.findOne(+req.user.userId);
         return user;
     }
+
+    @Public()
+    @UseGuards(JwtAuthGuard)
+    @Post('loginWx')
+    async loginWx(@Body('code') code: string) {
+        const token = await this.authService.loginByWechat(code);
+        return { access_token: token };
+    }
 }

@@ -6,7 +6,7 @@ import { Classify } from './classify.entity';
 @Index(['userId', 'createdAt']) // 创建复合索引
 export class Photo {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: number | undefined;
 
     @Column()
     url: string;

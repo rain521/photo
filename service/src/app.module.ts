@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { User } from './entities/user.entity';
 import { Photo } from './entities/photo.entity';
 import { Classify } from './entities/classify.entity';
+import { Wifi } from './entities/wifi.entity';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
@@ -15,6 +16,7 @@ import { PhotoModule } from './photo/photo.module';
 import { OssModule } from './oss/oss.module';
 import { ClassifyModule } from './classify/classify.module';
 import { AiModule } from './ai/ai.module';
+import { WifiModule } from './wifi/wifi.module';
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -31,7 +33,7 @@ import { AiModule } from './ai/ai.module';
                 username: configService.get<string>('DATABASE_USERNAME'),
                 password: configService.get<string>('DATABASE_PASSWORD'),
                 database: configService.get<string>('DATABASE_DATABASE'),
-                entities: [User, Photo, Classify],
+                entities: [User, Photo, Classify, Wifi],
                 synchronize: true,
             })
         }),
@@ -41,7 +43,8 @@ import { AiModule } from './ai/ai.module';
         PhotoModule,
         OssModule,
         ClassifyModule,
-        AiModule
+        AiModule,
+        WifiModule
     ],
     controllers: [AppController],
     providers: [AppService,

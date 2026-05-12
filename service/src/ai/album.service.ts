@@ -132,7 +132,7 @@ export class AlbumService {
                 throw new Error('Response is not an array');
             }
             return order;
-        } catch (e) {
+        } catch (e: any) {
             this.logger.error(`JSON parse error: ${e.message}`);
             return [];
         }
@@ -159,7 +159,7 @@ export class AlbumService {
                 order: result.order ?? [],
                 frames: result.frames,
             };
-        } catch (e) {
+        } catch (e: any) {
             this.logger.error(`JSON parse error: ${e.message}`);
             return { templateIndex: 0, frameCount: 0, order: [] };
         }
