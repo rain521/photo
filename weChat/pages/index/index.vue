@@ -1,60 +1,75 @@
 <template>
 	<view>
-		
+		<input class="c-input" type="text" v-model="wifi.name">
+		<input class="c-input" type="text" v-model="wifi.password">
+		<div @click="save">创建</div>
+		<div @click="get">查询</div>
 	</view>
 </template>
 
 <script setup>
+	import {
+		requestWithAuth
+	} from '@/utils/request.js';
+	import {reactive} from "vue";
 	const app = getApp();
-	console.log(app)
-	getToken()
-	function getToken(){
-		// 小程序端
-		uni.login({
-		  success(res) {
-			  console.log(res.code)
-		    if (res.code) {
-		      uni.request({
-		        url: 'http://localhost:3000/api/auth/loginWx',
-		        method: 'POST',
-		        data: { code: res.code },
-		        success(response) {
-					app.globalData.token = response.data.access_token;
-					console.log(app)
-		          // const token = response.data.access_token;
-		          // wx.setStorageSync('token', token); // 之后请求带上 Authorization: Bearer token
-		        }
-		      });
-		    }
-		  }
+	const wifi = reactive({
+		name:null,
+		password:null,
+		userId:null,
+	})
+	// 获取用户信息
+	async function fetchUserProfile() {
+		if(app.globalData.user){
+			return await app.globalData.user
+		}
+		const res = await requestWithAuth({
+			url: `/api/user/getUser`,
+			method: 'GET'
 		});
+		app.globalData.user = res;
+		return app.globalData.user
+	}
+	
+	const save = async function(){
+		const user = await fetchUserProfile();
+		wifi.userId = user.id;
+		const res = requestWithAuth({
+			url: `/api/wifi`,
+			method: 'POST',
+			data: wifi
+		}).catch(err => {	
+			uni.showToast({
+				title: err.data.message,
+				icon: "none"
+			});
+		});
+		if(res){
+			uni.showToast({
+				title: "创建成功",
+				icon: "success"
+			});
+		}
+	}
+	const get = function(){
+		const res = requestWithAuth({
+			url: `/api/wifi/getAll`,
+			method: 'GET'
+		}).catch(err => {	
+			uni.showToast({
+				title: err.data.message,
+				icon: "none"
+			});
+		});
+		console.log(res)
 	}
 </script>
 
 <style>
-	.content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.logo {
-		height: 200rpx;
-		width: 200rpx;
-		margin-top: 200rpx;
-		margin-left: auto;
-		margin-right: auto;
-		margin-bottom: 50rpx;
-	}
-
-	.text-area {
-		display: flex;
-		justify-content: center;
-	}
-
-	.title {
-		font-size: 36rpx;
-		color: #8f8f94;
+	.c-input {
+		border: 1px solid #ddd;
+		height: 40px;
+		border-radius: 4px;
+		padding: 0 12rpx;
 	}
 </style>

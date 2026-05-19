@@ -1,25 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { Wifi } from '../interface/wifi';
+import { Wifi } from '../entities/wifi.entity';
+import { Wifi as WifiInterface } from '../interface/wifi';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class WifiService {
-  create(createWifiDto: Wifi) {
-    return 'This action adds a new wifi';
-  }
+    constructor(
+        @InjectRepository(Wifi)
+        private wifiRepository: Repository<Wifi>,
+    ) { }
+    async create(createWifiDto: Partial<Wifi>) {
+        const data = this.wifiRepository.create(createWifiDto);
+        return await this.wifiRepository.save(data);
+    }
 
-  findAll() {
-    return `This action returns all wifi`;
-  }
+    async findAll(userId: number) {
+        const data = await this.wifiRepository.find({ where: { userId } });
+        return data;
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wifi`;
-  }
+    async findOne(id: number): Promise<Wifi | null> {
+        return this.wifiRepository.findOne({ where: { id } });
+    }
 
-  update(id: number, updateWifiDto: Wifi) {
-    return `This action updates a #${id} wifi`;
-  }
+    async update(id: number, updateWifiDto: Partial<Wifi>) {
+        await this.wifiRepository.update(id, updateWifiDto);
+        return this.findOne(id);
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} wifi`;
-  }
+    async remove(id: number) {
+        return this.wifiRepository.delete(id);
+    }
 }

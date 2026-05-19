@@ -1,13 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, HttpStatus, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import * as express from 'express';
+import { Observable } from 'rxjs';
+
+class PostSuccessStatusInterceptor implements NestInterceptor {
+    intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+        const request = context.switchToHttp().getRequest();
+        const response = context.switchToHttp().getResponse();
+        if (request.method === 'POST') {
+            response.status(HttpStatus.OK);
+        }
+        return next.handle();
+    }
+}
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     // 设置全局前缀为 'api'
     app.setGlobalPrefix('api');
     app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalInterceptors(new PostSuccessStatusInterceptor());
 
     // 启用CORS
     app.enableCors();

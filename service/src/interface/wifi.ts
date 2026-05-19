@@ -1,7 +1,7 @@
 export interface Wifi {
     name: string;
     password: string;
-    userId: string;
+    userId: number;
     isActive: boolean;
     createdAt?: Date;
     updatedAt?: Date;

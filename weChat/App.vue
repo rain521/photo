@@ -10,7 +10,8 @@
 			console.log('App Hide')
 		},
 		globalData:{
-			token:null
+			token:null,
+			user:null
 		}
 	}
 </script>

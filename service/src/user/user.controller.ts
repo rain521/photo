@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UnauthorizedException, NotFoundException, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Request, Param, Delete, Query, UnauthorizedException, NotFoundException, Put, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from 'src/utils/public';
 import { Like } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -17,7 +18,6 @@ export class UserController {
     @Public()
     @Get()
     findAll() {
-        console.log('user.controller.ts:findAll')
         return this.userService.findAll();
     }
 
@@ -30,19 +30,28 @@ export class UserController {
         return this.userService.findOneName(name);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('getUser')
+    getUser(@Request() req) {
+        if (!req.user || !req.user.userId) {
+            throw new UnauthorizedException('请先登录');
+        }
+        return this.userService.findOne(req.user.userId);
+    }
+
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.userService.findOne(+id);
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.userService.findOne(id);
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-        return this.userService.update(+id, updateUserDto);
+    update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
+        return this.userService.update(id, updateUserDto);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.userService.remove(+id);
+    remove(@Param('id', ParseIntPipe) id: number) {
+        return this.userService.remove(id);
     }
 
     @Post('pagination')

@@ -1,33 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UnauthorizedException, InternalServerErrorException, ParseUUIDPipe } from '@nestjs/common';
 import { WifiService } from './wifi.service';
 import { Wifi } from '../interface/wifi';
+import { Public } from 'src/utils/public';
 
 @Controller('wifi')
 export class WifiController {
-  constructor(private readonly wifiService: WifiService) {}
+    constructor(private readonly wifiService: WifiService) { }
 
-  @Post()
-  create(@Body() createWifiDto: Wifi) {
-    return this.wifiService.create(createWifiDto);
-  }
+    @Post()
+    create(@Body() createWifiDto: Wifi) {
+        if(!createWifiDto.userId || !createWifiDto.name || !createWifiDto.password){
+            throw new InternalServerErrorException ('数据不准确，请检查');
+        }
+        return this.wifiService.create(createWifiDto);
+    }
 
-  @Get()
-  findAll() {
-    return this.wifiService.findAll();
-  }
+    @Get('getAll')
+    findAll(@Request() req) {
+        return this.wifiService.findAll(req.user.userId);
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wifiService.findOne(+id);
-  }
+    @Get(':id')
+    findOne(@Param('id', new ParseUUIDPipe()) id: number) {
+        return this.wifiService.findOne(id);
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWifiDto: Wifi) {
-    return this.wifiService.update(+id, updateWifiDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wifiService.remove(+id);
-  }
+    @Delete(':id')
+    remove(@Param('id', new ParseUUIDPipe()) id: number) {
+        return this.wifiService.remove(id);
+    }
 }
