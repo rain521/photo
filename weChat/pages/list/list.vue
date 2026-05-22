@@ -42,13 +42,7 @@
 	import {ref} from "vue";
 	import {onShow,onLoad,onShareAppMessage,onReady} from "@dcloudio/uni-app";
 	const app = getApp();
-	const wifiList = ref([{
-		name: '111',
-		password: '222',
-	},{
-		name: '222',
-		password: '333',
-	}])
+	const wifiList = ref([])
 	
 	onShow(()=>{
 		get();
