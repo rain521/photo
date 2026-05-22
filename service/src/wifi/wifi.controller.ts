@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UnauthorizedException, InternalServerErrorException, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Query, UnauthorizedException, InternalServerErrorException, ParseUUIDPipe, Put, ParseIntPipe } from '@nestjs/common';
 import { WifiService } from './wifi.service';
 import { Wifi } from '../interface/wifi';
 import { Public } from 'src/utils/public';
@@ -21,12 +21,22 @@ export class WifiController {
     }
 
     @Get(':id')
-    findOne(@Param('id', new ParseUUIDPipe()) id: number) {
+    findOne(@Param('id') id: number) {
+        return this.wifiService.findOne(id);
+    }
+
+    @Get()
+    findOneByQuery(@Query('id') id: number) {
         return this.wifiService.findOne(id);
     }
 
     @Delete(':id')
     remove(@Param('id', new ParseUUIDPipe()) id: number) {
         return this.wifiService.remove(id);
+    }
+    
+    @Put()
+    update(@Body() createWifiDto: Wifi) {
+        return this.wifiService.update(createWifiDto.id, createWifiDto);
     }
 }

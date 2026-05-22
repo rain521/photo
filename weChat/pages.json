@@ -3,7 +3,27 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/list/list",
+			"style": {
+				"navigationBarTitleText": "我的wifi",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/edit/edit",
+			"style": {
+				"navigationBarTitleText": "编辑wifi",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/connect/connect",
+			"style": {
+				"navigationBarTitleText": ""
 			}
 		}
 	],

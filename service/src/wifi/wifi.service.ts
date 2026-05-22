@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Wifi } from '../entities/wifi.entity';
-import { Wifi as WifiInterface } from '../interface/wifi';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
