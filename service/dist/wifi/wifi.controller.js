@@ -26,6 +26,13 @@ let WifiController = class WifiController {
         }
         return this.wifiService.create(createWifiDto);
     }
+    async getQrcode(page, scene, res) {
+        console.log(page, scene);
+        const buffer = await this.wifiService.createWxaQrcode(page, scene);
+        res.setHeader('Content-Type', 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        res.send(buffer);
+    }
     findAll(req) {
         return this.wifiService.findAll(req.user.userId);
     }
@@ -50,6 +57,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], WifiController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('qrcode'),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('scene')),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], WifiController.prototype, "getQrcode", null);
 __decorate([
     (0, common_1.Get)('getAll'),
     __param(0, (0, common_1.Request)()),

@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Query, UnauthorizedException, InternalServerErrorException, ParseUUIDPipe, Put, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Query, UnauthorizedException, InternalServerErrorException, ParseUUIDPipe, Put, ParseIntPipe, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { WifiService } from './wifi.service';
 import { Wifi } from '../interface/wifi';
 import { Public } from 'src/utils/public';
@@ -13,6 +14,15 @@ export class WifiController {
             throw new InternalServerErrorException ('数据不准确，请检查');
         }
         return this.wifiService.create(createWifiDto);
+    }
+
+    @Get('qrcode')
+    async getQrcode( @Query('page') page: string, @Query('scene') scene: string, @Res() res: Response,) {
+        console.log(page, scene); // 获取参数
+        const buffer = await this.wifiService.createWxaQrcode(page, scene);
+        res.setHeader('Content-Type', 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // 二维码可长时间缓存
+        res.send(buffer);
     }
 
     @Get('getAll')

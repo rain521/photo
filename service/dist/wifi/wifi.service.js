@@ -17,10 +17,14 @@ const common_1 = require("@nestjs/common");
 const wifi_entity_1 = require("../entities/wifi.entity");
 const typeorm_1 = require("typeorm");
 const typeorm_2 = require("@nestjs/typeorm");
+const axios_1 = require("axios");
+const config_1 = require("@nestjs/config");
 let WifiService = class WifiService {
     wifiRepository;
-    constructor(wifiRepository) {
+    configService;
+    constructor(wifiRepository, configService) {
         this.wifiRepository = wifiRepository;
+        this.configService = configService;
     }
     async create(createWifiDto) {
         const data = this.wifiRepository.create(createWifiDto);
@@ -40,11 +44,36 @@ let WifiService = class WifiService {
     async remove(id) {
         return this.wifiRepository.delete(id);
     }
+    async createWxaQrcode(page, scene) {
+        const accessToken = await this.getAccessToken();
+        const url = `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${accessToken}`;
+        const requestBody = {
+            path: `${page}?${scene}`,
+            width: 430,
+            env_version: 'develop',
+        };
+        const response = await axios_1.default.post(url, requestBody, {
+            responseType: 'arraybuffer',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const imageBuffer = Buffer.from(response.data);
+        return imageBuffer;
+    }
+    async getAccessToken() {
+        const appId = this.configService.get('WX_APPID');
+        const appSecret = this.configService.get('WX_SECRET');
+        const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`;
+        const { data } = await axios_1.default.get(url);
+        return data.access_token;
+    }
 };
 exports.WifiService = WifiService;
 exports.WifiService = WifiService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(wifi_entity_1.Wifi)),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        config_1.ConfigService])
 ], WifiService);
 //# sourceMappingURL=wifi.service.js.map

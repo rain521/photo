@@ -1,6 +1,7 @@
 // utils/request.js
 
 // 基础配置
+// const BASE_URL = 'http://www.cytp.cc';
 const BASE_URL = 'http://localhost:3000';
 const LOGIN_URL = '/api/auth/loginWx';
 

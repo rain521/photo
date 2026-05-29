@@ -31,6 +31,7 @@
 				<view class="card-deco">
 					<text class="deco-tag" @click="edit(item)">编辑</text>
 					<text class="deco-tag" @click="connect(item)">连接</text>
+					<text class="deco-tag" @click="getQRCode(item)">下载</text>
 				</view>
 			</view>
 		</scroll-view>
@@ -38,16 +39,25 @@
 </template>
 
 <script setup>
-	import {requestWithAuth} from '@/utils/request.js';
-	import {ref} from "vue";
-	import {onShow,onLoad,onShareAppMessage,onReady} from "@dcloudio/uni-app";
+	import {
+		requestWithAuth
+	} from '@/utils/request.js';
+	import {
+		ref
+	} from "vue";
+	import {
+		onShow,
+		onLoad,
+		onShareAppMessage,
+		onReady
+	} from "@dcloudio/uni-app";
 	const app = getApp();
 	const wifiList = ref([])
-	
-	onShow(()=>{
+
+	onShow(() => {
 		get();
 	})
-	
+
 	const get = async function() {
 		const res = await requestWithAuth({
 			url: `/api/wifi/getAll`,
@@ -62,15 +72,74 @@
 		wifiList.value = res;
 		console.log(wifiList.value)
 	}
-	const edit = function(item){
+	const edit = function(item) {
 		uni.navigateTo({
-			url:`/pages/edit/edit?id=${item.id}`
+			url: `/pages/edit/edit?id=${item.id}`
 		})
 	}
-	const connect = function(item){
+	const connect = function(item) {
 		uni.navigateTo({
-			url:`/pages/connect/connect?id=${item.id}`
+			url: `/pages/connect/connect?id=${item.id}`
 		})
+	}
+	const getQRCode = async function(item) {
+		const res = await requestWithAuth({
+			url: `/api/wifi/qrcode`,
+			method: 'GET',
+			data:{
+				page: 'pages/connect/connect',
+				scene: `id=${item.id}`
+			}
+		}).catch(err => {
+			console.log(err)
+			// uni.showToast({
+			// 	title: err.data.message,
+			// 	icon: "none"
+			// });
+		});
+		// const res = await wx.cloud.callFunction({
+		// 	name: 'getQRCode',
+		// 	data: {
+		// 		page: 'pages/connect/connect',
+		// 		scene: `id=${item.id}`
+		// 	}
+		// });
+		// 获取到云存储的 fileID，用于展示图片
+		console.log(res);
+	}
+	// 下载图片并保存到相册
+	async function downloadAndSaveImage(imageUrl) {
+	  try {
+	    // 1. 下载文件（返回临时路径）
+	    const res = await uni.downloadFile({ url: imageUrl });
+	    if (res.statusCode !== 200) {
+	      throw new Error('下载失败');
+	    }
+	    const tempFilePath = res.tempFilePath;
+	
+	    // 2. 保存到相册（需要用户授权）
+	    await uni.saveImageToPhotosAlbum({
+	      filePath: tempFilePath,
+	    });
+	
+	    uni.showToast({ title: '已保存到相册', icon: 'success' });
+	  } catch (err) {
+	    console.error('保存图片失败', err);
+	    // 如果是权限问题，引导用户开启相册权限
+	    if (err.errMsg?.includes('auth deny')) {
+	      uni.showModal({
+	        title: '提示',
+	        content: '需要您授权保存图片到相册',
+	        success: (modalRes) => {
+	          if (modalRes.confirm) {
+	            uni.openSetting(); // 打开设置页面
+	          }
+	        }
+	      });
+	    } else {
+	      uni.showToast({ title: '保存失败', icon: 'none' });
+	    }
+	  }
 	}
 </script>
 
