@@ -103,7 +103,7 @@ function save() {
         });
     } else {
         axios.post(`/api/user`, data.value).then((res) => {
-            if (res.status === 201) {
+            if (res.status === 200) {
                 ElMessage.success("保存成功");
                 router.push({ path: "/user" });
             } else {

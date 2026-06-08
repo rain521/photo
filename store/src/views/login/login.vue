@@ -79,7 +79,7 @@ function save() {
             },
         )
         .then((res) => {
-            if (res.status == 201) {
+            if (res.status == 200) {
                 tokenStore.increment(res.data.access_token);
                 getUser();
             } else {
