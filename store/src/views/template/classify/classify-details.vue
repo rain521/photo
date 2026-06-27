@@ -96,7 +96,7 @@ function save() {
         });
     } else {
         axios.post(`/api/classify`, data.value).then((res) => {
-            if (res.status === 201) {
+            if (res.status === 200) {
                 ElMessage.success("保存成功");
                 router.push({ path: "/classify" });
             } else {

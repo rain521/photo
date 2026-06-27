@@ -99,7 +99,7 @@ function uploadSuccess(url) {
         if(!data.value.id){
             loading.value = true;
             axios.post(`/api/photo`, data.value).then((res) => {
-                if (res.status === 201) {
+                if (res.status === 200) {
                     ElMessage.success("上传成功");
                 } else {
                     ElMessage.error(res.data.message || "系统报错");
