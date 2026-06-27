@@ -10,18 +10,19 @@ export class WifiController {
 
     @Post()
     create(@Body() createWifiDto: Wifi) {
-        if(!createWifiDto.userId || !createWifiDto.name || !createWifiDto.password){
-            throw new InternalServerErrorException ('数据不准确，请检查');
+        if (!createWifiDto.userId || !createWifiDto.name || !createWifiDto.password) {
+            throw new InternalServerErrorException('数据不准确，请检查');
         }
         return this.wifiService.create(createWifiDto);
     }
 
+    @Public()
     @Get('qrcode')
-    async getQrcode( @Query('page') page: string, @Query('scene') scene: string, @Res() res: Response,) {
+    async getQrcode(@Query('page') page: string, @Query('scene') scene: string, @Res() res: Response,) {
         console.log(page, scene); // 获取参数
         const buffer = await this.wifiService.createWxaQrcode(page, scene);
         res.setHeader('Content-Type', 'image/jpeg');
-        res.setHeader('Cache-Control', 'public, max-age=86400'); // 二维码可长时间缓存
+        res.setHeader('Content-Length', buffer.length);
         res.send(buffer);
     }
 
@@ -44,7 +45,7 @@ export class WifiController {
     remove(@Param('id', new ParseUUIDPipe()) id: number) {
         return this.wifiService.remove(id);
     }
-    
+
     @Put()
     update(@Body() createWifiDto: Wifi) {
         return this.wifiService.update(createWifiDto.id, createWifiDto);

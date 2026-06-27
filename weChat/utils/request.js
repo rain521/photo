@@ -1,8 +1,9 @@
 // utils/request.js
 
+const app = getApp();
 // 基础配置
 // const BASE_URL = 'http://www.cytp.cc';
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = app.globalData.requestUrl;
 const LOGIN_URL = '/api/auth/loginWx';
 
 // 获取本地 Token

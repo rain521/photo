@@ -48,9 +48,12 @@ let WifiService = class WifiService {
         const accessToken = await this.getAccessToken();
         const url = `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${accessToken}`;
         const requestBody = {
-            path: `${page}?${scene}`,
-            width: 430,
-            env_version: 'develop',
+            scene,
+            page,
+            width: 280,
+            auto_color: false,
+            line_color: { r: 0, g: 0, b: 0 },
+            is_hyaline: false,
         };
         const response = await axios_1.default.post(url, requestBody, {
             responseType: 'arraybuffer',

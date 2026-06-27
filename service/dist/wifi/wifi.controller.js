@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WifiController = void 0;
 const common_1 = require("@nestjs/common");
 const wifi_service_1 = require("./wifi.service");
+const public_1 = require("../utils/public");
 let WifiController = class WifiController {
     wifiService;
     constructor(wifiService) {
@@ -30,7 +31,7 @@ let WifiController = class WifiController {
         console.log(page, scene);
         const buffer = await this.wifiService.createWxaQrcode(page, scene);
         res.setHeader('Content-Type', 'image/jpeg');
-        res.setHeader('Cache-Control', 'public, max-age=86400');
+        res.setHeader('Content-Length', buffer.length);
         res.send(buffer);
     }
     findAll(req) {
@@ -58,6 +59,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], WifiController.prototype, "create", null);
 __decorate([
+    (0, public_1.Public)(),
     (0, common_1.Get)('qrcode'),
     __param(0, (0, common_1.Query)('page')),
     __param(1, (0, common_1.Query)('scene')),

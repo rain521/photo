@@ -4,7 +4,7 @@
 		<view class="glow-orb orb-list"></view>
 
 		<view class="page-header">
-			<text class="page-title">NETWORK MATRIX</text>
+			<text class="page-title">我的WIFI</text>
 			<text class="subtitle">已激活的无线网络终端列表</text>
 		</view>
 
@@ -82,64 +82,117 @@
 			url: `/pages/connect/connect?id=${item.id}`
 		})
 	}
+
 	const getQRCode = async function(item) {
-		const res = await requestWithAuth({
-			url: `/api/wifi/qrcode`,
-			method: 'GET',
-			data:{
-				page: 'pages/connect/connect',
-				scene: `id=${item.id}`
+		try {
+			// 1. 请求后端生成二维码的接口，直接下载为临时文件
+			//    注意：这里不能用 request，因为要保存为图片，建议用 downloadFile
+			const baseUrl = app.globalData.requestUrl + '/api/wifi/qrcode';
+			// 可以携带自定义参数，例如当前用户的邀请 scene
+			const scene = `id=${item.id}`;
+			const page = 'pages/connect/connect'; // 扫码后跳转的页面
+
+			uni.showLoading({
+				title: '生成中...'
+			});
+
+			const token = uni.getStorageSync('token') || '';
+			const downloadRes = await uni.downloadFile({
+				url: `${baseUrl}?scene=${scene}&page=${page}`,
+				header:{
+					Authorization: `Bearer ${token}`
+				}
+			});
+
+			uni.hideLoading();
+
+			if (downloadRes.statusCode !== 200) {
+				uni.showToast({
+					title: '图片下载失败',
+					icon: 'none'
+				});
+				return;
 			}
-		}).catch(err => {
-			console.log(err)
-			// uni.showToast({
-			// 	title: err.data.message,
-			// 	icon: "none"
-			// });
-		});
-		// const res = await wx.cloud.callFunction({
-		// 	name: 'getQRCode',
-		// 	data: {
-		// 		page: 'pages/connect/connect',
-		// 		scene: `id=${item.id}`
-		// 	}
-		// });
-		// 获取到云存储的 fileID，用于展示图片
-		console.log(res);
+
+			const tempFilePath = downloadRes.tempFilePath;
+
+			// 2. 请求保存到相册权限（微信小程序需授权）
+			const authResult = await requestSaveImageAuth();
+			if (!authResult) {
+				uni.showToast({
+					title: '未授权保存到相册',
+					icon: 'none'
+				});
+				return;
+			}
+
+			// 3. 保存到系统相册
+			await uni.saveImageToPhotosAlbum({
+				filePath: tempFilePath,
+			});
+
+			uni.showToast({
+				title: '已保存到相册',
+				icon: 'success'
+			});
+		} catch (err) {
+			uni.hideLoading();
+			console.error('下载失败：', err);
+			// 如果是用户拒绝授权，引导打开设置
+			if (err.errMsg && err.errMsg.includes('auth deny')) {
+				uni.showModal({
+					title: '提示',
+					content: '需要您授权保存到相册',
+					success: (res) => {
+						if (res.confirm) {
+							uni.openSetting();
+						}
+					},
+				});
+			} else {
+				uni.showToast({
+					title: '操作失败',
+					icon: 'none'
+				});
+			}
+		}
 	}
-	// 下载图片并保存到相册
-	async function downloadAndSaveImage(imageUrl) {
-	  try {
-	    // 1. 下载文件（返回临时路径）
-	    const res = await uni.downloadFile({ url: imageUrl });
-	    if (res.statusCode !== 200) {
-	      throw new Error('下载失败');
-	    }
-	    const tempFilePath = res.tempFilePath;
-	
-	    // 2. 保存到相册（需要用户授权）
-	    await uni.saveImageToPhotosAlbum({
-	      filePath: tempFilePath,
-	    });
-	
-	    uni.showToast({ title: '已保存到相册', icon: 'success' });
-	  } catch (err) {
-	    console.error('保存图片失败', err);
-	    // 如果是权限问题，引导用户开启相册权限
-	    if (err.errMsg?.includes('auth deny')) {
-	      uni.showModal({
-	        title: '提示',
-	        content: '需要您授权保存图片到相册',
-	        success: (modalRes) => {
-	          if (modalRes.confirm) {
-	            uni.openSetting(); // 打开设置页面
-	          }
-	        }
-	      });
-	    } else {
-	      uni.showToast({ title: '保存失败', icon: 'none' });
-	    }
-	  }
+
+	// 封装授权方法
+	const requestSaveImageAuth = () => {
+		return new Promise((resolve) => {
+			uni.getSetting({
+				success: (res) => {
+					// 如果已授权直接保存
+					if (res.authSetting['scope.writePhotosAlbum']) {
+						resolve(true);
+					}
+					// 未授权则发起请求
+					else if (res.authSetting['scope.writePhotosAlbum'] === false) {
+						// 之前拒绝过，引导打开设置
+						uni.showModal({
+							title: '提示',
+							content: '您已拒绝保存到相册，请手动打开设置授权',
+							success: (modalRes) => {
+								if (modalRes.confirm) {
+									uni.openSetting();
+								}
+								resolve(false);
+							},
+						});
+					} else {
+						// 首次请求授权
+						uni.authorize({
+							scope: 'scope.writePhotosAlbum',
+							success: () => resolve(true),
+							fail: () => {
+								resolve(false);
+							},
+						});
+					}
+				},
+			});
+		});
 	}
 </script>
 

@@ -41,9 +41,12 @@ export class WifiService {
         const url = `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${accessToken}`;
         // 构造请求体
         const requestBody = {
-           path: `${page}?${scene}`,  // get 接口参数放在 path 里
-            width: 430,
-            env_version: 'develop',     // 指定开发版
+            scene,           // 自定义参数，最大32个可见字符
+            page,            // 跳转页面，例如 'pages/index/index'，不能加 '/' 开头
+            width: 280,      // 二维码宽度
+            auto_color: false,
+            line_color: { r: 0, g: 0, b: 0 },
+            is_hyaline: false, // 是否需要透明底色
         };
 
         // 以POST方式请求，指定返回二进制数据
@@ -63,7 +66,7 @@ export class WifiService {
         const appId = this.configService.get<string>('WX_APPID');
         const appSecret = this.configService.get<string>('WX_SECRET');
         const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`;
-        
+
         const { data } = await axios.get(url);
         return data.access_token;
     }

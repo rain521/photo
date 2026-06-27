@@ -5,7 +5,7 @@
 		<div @click="save">创建</div>
 		<div @click="get">查询</div>
 	</view> -->
-	<view class="container">
+	<!-- <view class="container">
 		<view class="header">
 			<text class="title">创建WIFI</text>
 		</view>
@@ -17,6 +17,38 @@
 		</view>
 		<button class="save-btn" @click="save">保存</button>
 		<div class="goBtn" @click="goList()">我的WIFI</div>
+	</view> -->
+	
+	<view class="cyber-container">
+		<!-- 背景霓虹光晕 -->
+		<view class="glow-orb orb-edit-1"></view>
+		<view class="glow-orb orb-edit-2"></view>
+	
+		<view class="cyber-card">
+			<view class="cyber-header">
+				<text class="glitch-title">创建WIFI</text>
+				<text class="subtitle">无线网络终端节点</text>
+			</view>
+	
+			<view class="input-group">
+				<text class="input-label">WIFI名称</text>
+				<input class="cyber-input" placeholder="输入新网络名称" placeholder-class="input-placeholder"v-model="wifi.name" />
+			</view>
+	
+			<view class="input-group">
+				<text class="input-label">WIFI密码</text>
+				<input class="cyber-input" placeholder="输入新安全密钥" placeholder-class="input-placeholder"v-model="wifi.password" />
+			</view>
+	
+			<!-- 底部双按钮：取消与保存 -->
+			<view class="btn-group">
+				<button class="cyber-btn btn-primary" @click="save">保存</button>
+			</view>
+			<view class="btn-group">
+				<button class="cyber-btn btn-secondary" @click="goList">我的WIFI</button>
+			</view>
+			
+		</view>
 	</view>
 </template>
 
