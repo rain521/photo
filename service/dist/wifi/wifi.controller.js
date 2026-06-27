@@ -22,7 +22,9 @@ let WifiController = class WifiController {
         this.wifiService = wifiService;
     }
     create(createWifiDto) {
-        if (!createWifiDto.userId || !createWifiDto.name || !createWifiDto.password) {
+        if (!createWifiDto.userId ||
+            !createWifiDto.name ||
+            !createWifiDto.password) {
             throw new common_1.InternalServerErrorException('数据不准确，请检查');
         }
         return this.wifiService.create(createWifiDto);
@@ -30,7 +32,7 @@ let WifiController = class WifiController {
     async getQrcode(page, scene, res) {
         console.log(page, scene);
         const buffer = await this.wifiService.createWxaQrcode(page, scene);
-        res.setHeader('Content-Type', 'image/jpeg');
+        res.setHeader('Content-Type', 'image/png');
         res.setHeader('Content-Length', buffer.length);
         res.send(buffer);
     }

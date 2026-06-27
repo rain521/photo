@@ -19,7 +19,14 @@
 	} from "@dcloudio/uni-app";
 
 	onLoad((data) => {
-		get(data.id);
+		if(data && data.scene){
+			const sceneStr = decodeURIComponent(data.scene); 
+		    const match = sceneStr.match(/id=(\d+)/);
+		    if (match) {
+				const id = match[1];
+				get(id);
+		    }
+		}
 	})
 
 	const get = async function(id) {

@@ -61,6 +61,14 @@ let WifiService = class WifiService {
                 'Content-Type': 'application/json',
             },
         });
+        const rawContentType = response.headers['content-type'] || '';
+        const contentType = typeof rawContentType === 'string' ? rawContentType : String(rawContentType);
+        if (contentType.includes('application/json') ||
+            contentType.includes('text/plain')) {
+            const errorStr = Buffer.from(response.data).toString('utf-8');
+            const err = JSON.parse(errorStr);
+            throw new Error(`微信小程序码生成失败: [${err.errcode}] ${err.errmsg}`);
+        }
         const imageBuffer = Buffer.from(response.data);
         return imageBuffer;
     }
