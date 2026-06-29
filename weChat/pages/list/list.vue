@@ -1,37 +1,39 @@
 <template>
-	<view class="cyber-container">
-		<!-- 顶部渐变背景环绕 -->
-		<view class="glow-orb orb-list"></view>
-
-		<view class="page-header">
-			<text class="page-title">我的WIFI</text>
-			<text class="subtitle">已激活的无线网络终端列表</text>
+	<view class="page">
+		<view class="hero">
+			<view>
+				<text class="eyebrow">WiFi Studio</text>
+				<text class="title">我的 WiFi</text>
+			</view>
+			<button class="add-btn" @click="goCreate">新增</button>
 		</view>
 
-		<!-- 列表空状态 -->
-		<view class="empty-state" v-if="wifiList.length === 0">
-			<text class="empty-text">未检测到已创建的网络</text>
+		<text class="desc">管理已创建的无线网络，快速连接、编辑或下载连接二维码。</text>
+
+		<view v-if="wifiList.length === 0" class="empty-panel">
+			<view class="empty-icon">+</view>
+			<text class="empty-title">还没有 WiFi</text>
+			<text class="empty-desc">创建第一个 WiFi 后，可以在这里管理和分享。</text>
+			<button class="action-btn primary" @click="goCreate">立即创建</button>
 		</view>
 
-		<!-- WiFi 卡片列表 -->
-		<scroll-view scroll-y class="matrix-scroll">
-			<view class="wifi-card" v-for="(item,index) in wifiList" :key="index">
-				<!-- 左侧网络状态及信息 -->
-				<view class="card-main">
-					<view class="wifi-header">
-						<view class="status-dot"></view>
-						<text class="wifi-ssid">{{item.name}}</text>
-					</view>
-					<view class="wifi-crypto">
-						<text class="crypto-label">密码:</text>
-						<text class="crypto-value">{{item.password}}</text>
+		<scroll-view v-else scroll-y class="list">
+			<view class="wifi-card" v-for="item in wifiList" :key="item.id">
+				<view class="card-top">
+					<view class="status-dot"></view>
+					<view class="wifi-info">
+						<text class="wifi-name">{{ item.name }}</text>
+						<view class="password-row">
+							<text class="password-label">密码</text>
+							<text class="password-value">{{ item.password }}</text>
+						</view>
 					</view>
 				</view>
-				<!-- 右侧装饰性信号/雷达 UI -->
-				<view class="card-deco">
-					<text class="deco-tag" @click="edit(item)">编辑</text>
-					<text class="deco-tag" @click="connect(item)">连接</text>
-					<text class="deco-tag" @click="getQRCode(item)">下载</text>
+
+				<view class="card-actions">
+					<button class="mini-btn" @click="edit(item)">编辑</button>
+					<button class="mini-btn primary" @click="connect(item)">连接</button>
+					<button class="mini-btn" @click="getQRCode(item)">下载</button>
 				</view>
 			</view>
 		</scroll-view>
@@ -40,57 +42,61 @@
 
 <script setup>
 	import {
+		ref
+	} from 'vue';
+	import {
+		onShow
+	} from '@dcloudio/uni-app';
+	import {
 		requestWithAuth
 	} from '@/utils/request.js';
-	import {
-		ref
-	} from "vue";
-	import {
-		onShow,
-		onLoad,
-		onShareAppMessage,
-		onReady
-	} from "@dcloudio/uni-app";
+
 	const app = getApp();
-	const wifiList = ref([])
+	const wifiList = ref([]);
 
 	onShow(() => {
 		get();
-	})
+	});
 
-	const get = async function() {
-		const res = await requestWithAuth({
-			url: `/api/wifi/getAll`,
-			method: 'GET'
-		}).catch(err => {
-			console.log(err)
-			// uni.showToast({
-			// 	title: err.data.message,
-			// 	icon: "none"
-			// });
-		});
-		wifiList.value = res;
-		console.log(wifiList.value)
+	async function get() {
+		try {
+			const res = await requestWithAuth({
+				url: '/api/wifi/getAll',
+				method: 'GET'
+			});
+			wifiList.value = Array.isArray(res) ? res : [];
+		} catch (err) {
+			wifiList.value = [];
+			uni.showToast({
+				title: getErrorMessage(err),
+				icon: 'none'
+			});
+		}
 	}
-	const edit = function(item) {
+
+	function goCreate() {
+		uni.navigateTo({
+			url: '/pages/index/index'
+		});
+	}
+
+	function edit(item) {
 		uni.navigateTo({
 			url: `/pages/edit/edit?id=${item.id}`
-		})
-	}
-	const connect = function(item) {
-		uni.navigateTo({
-			url: `/pages/connect/connect?id=${item.id}`
-		})
+		});
 	}
 
-	const getQRCode = async function(item) {
+	function connect(item) {
+		uni.navigateTo({
+			url: `/pages/connect/connect?id=${item.id}`
+		});
+	}
+
+	async function getQRCode(item) {
 		try {
-			// 1. 请求后端生成二维码的接口，直接下载为临时文件
-			//    注意：这里不能用 request，因为要保存为图片，建议用 downloadFile
 			const baseUrl = app.globalData.requestUrl + '/api/wifi/qrcode';
-			// 可以携带自定义参数，例如当前用户的邀请 scene
 			const scene = `id=${item.id}`;
-			const page = 'pages/connect/connect'; // 扫码后跳转的页面
+			const page = 'pages/connect/connect';
 
 			uni.showLoading({
 				title: '生成中...'
@@ -99,7 +105,7 @@
 			const token = uni.getStorageSync('token') || '';
 			const downloadRes = await uni.downloadFile({
 				url: `${baseUrl}?scene=${scene}&page=${page}`,
-				header:{
+				header: {
 					Authorization: `Bearer ${token}`
 				}
 			});
@@ -114,9 +120,6 @@
 				return;
 			}
 
-			const tempFilePath = downloadRes.tempFilePath;
-
-			// 2. 请求保存到相册权限（微信小程序需授权）
 			const authResult = await requestSaveImageAuth();
 			if (!authResult) {
 				uni.showToast({
@@ -126,9 +129,8 @@
 				return;
 			}
 
-			// 3. 保存到系统相册
 			await uni.saveImageToPhotosAlbum({
-				filePath: tempFilePath,
+				filePath: downloadRes.tempFilePath
 			});
 
 			uni.showToast({
@@ -137,39 +139,34 @@
 			});
 		} catch (err) {
 			uni.hideLoading();
-			console.error('下载失败：', err);
-			// 如果是用户拒绝授权，引导打开设置
 			if (err.errMsg && err.errMsg.includes('auth deny')) {
 				uni.showModal({
 					title: '提示',
-					content: '需要您授权保存到相册',
+					content: '需要授权保存到相册',
 					success: (res) => {
 						if (res.confirm) {
 							uni.openSetting();
 						}
-					},
+					}
 				});
-			} else {
-				uni.showToast({
-					title: '操作失败',
-					icon: 'none'
-				});
+				return;
 			}
+			uni.showToast({
+				title: '操作失败',
+				icon: 'none'
+			});
 		}
 	}
 
-	// 封装授权方法
-	const requestSaveImageAuth = () => {
+	function requestSaveImageAuth() {
 		return new Promise((resolve) => {
 			uni.getSetting({
 				success: (res) => {
-					// 如果已授权直接保存
 					if (res.authSetting['scope.writePhotosAlbum']) {
 						resolve(true);
+						return;
 					}
-					// 未授权则发起请求
-					else if (res.authSetting['scope.writePhotosAlbum'] === false) {
-						// 之前拒绝过，引导打开设置
+					if (res.authSetting['scope.writePhotosAlbum'] === false) {
 						uni.showModal({
 							title: '提示',
 							content: '您已拒绝保存到相册，请手动打开设置授权',
@@ -178,215 +175,252 @@
 									uni.openSetting();
 								}
 								resolve(false);
-							},
+							}
 						});
-					} else {
-						// 首次请求授权
-						uni.authorize({
-							scope: 'scope.writePhotosAlbum',
-							success: () => resolve(true),
-							fail: () => {
-								resolve(false);
-							},
-						});
+						return;
 					}
+					uni.authorize({
+						scope: 'scope.writePhotosAlbum',
+						success: () => resolve(true),
+						fail: () => resolve(false)
+					});
 				},
+				fail: () => resolve(false)
 			});
 		});
+	}
+
+	function getErrorMessage(err = {}) {
+		return err.data && err.data.message ? err.data.message : '列表加载失败';
 	}
 </script>
 
 <style>
-	.cyber-container {
-		position: relative;
-		padding: 40rpx 30rpx;
-		display: flex;
-		flex-direction: column;
-		height: 100vh;
-		background-color: #0a0b10;
+	page {
+		background: #f6f7f9;
+	}
+
+	.page {
+		min-height: 100vh;
+		padding: 88rpx 40rpx 56rpx;
 		box-sizing: border-box;
-		overflow: hidden;
+		background:
+			linear-gradient(180deg, rgba(34, 197, 94, 0.12), rgba(246, 247, 249, 0) 34%),
+			#f6f7f9;
+		color: #14161a;
 	}
 
-	.glow-orb {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(100px);
-		opacity: 0.25;
-		z-index: 1;
-	}
-
-	.orb-list {
-		width: 600rpx;
-		height: 600rpx;
-		background: linear-gradient(135deg, #7000ff, #00f0ff);
-		top: -200rpx;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-
-	.page-header {
-		position: relative;
-		z-index: 2;
-		margin-top: 140rpx;
-		margin-bottom: 50rpx;
-	}
-
-	.page-title {
-		font-size: 52rpx;
-		font-weight: 900;
-		color: #ffffff;
-		letter-spacing: 4rpx;
-		text-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-	}
-
-	.subtitle {
-		font-size: 24rpx;
-		color: #7e8191;
-		margin-top: 8rpx;
-		display: block;
-	}
-
-	.matrix-scroll {
-		flex: 1;
-		position: relative;
-		z-index: 2;
-		height: calc(100vh - 350rpx);
-	}
-
-	/* WiFi卡片样式 */
-	.wifi-card {
-		background: rgba(22, 24, 37, 0.7);
-		backdrop-filter: blur(15px);
-		border: 1rpx solid rgba(255, 255, 255, 0.05);
-		border-left: 6rpx solid #00f0ff;
-		/* 极光青边界线 */
-		border-radius: 20rpx;
-		padding: 35rpx 30rpx;
-		margin-bottom: 30rpx;
+	.hero {
 		display: flex;
+		align-items: flex-start;
 		justify-content: space-between;
-		align-items: center;
-		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+		gap: 28rpx;
+		margin-bottom: 18rpx;
 	}
 
-	.card-main {
-		flex: 1;
-	}
-
-	.wifi-header {
-		display: flex;
-		align-items: center;
+	.eyebrow {
+		display: block;
 		margin-bottom: 16rpx;
-	}
-
-	/* 呼吸灯状态圆点 */
-	.status-dot {
-		width: 12rpx;
-		height: 12rpx;
-		background-color: #00f0ff;
-		border-radius: 50%;
-		margin-right: 16rpx;
-		box-shadow: 0 0 10px #00f0ff;
-		animation: pulse 2s infinite;
-	}
-
-	@keyframes pulse {
-		0% {
-			opacity: 0.4;
-		}
-
-		50% {
-			opacity: 1;
-		}
-
-		100% {
-			opacity: 0.4;
-		}
-	}
-
-	.wifi-ssid {
-		font-size: 34rpx;
-		font-weight: bold;
-		color: #ffffff;
-		letter-spacing: 1rpx;
-	}
-
-	.wifi-crypto {
-		display: inline-flex;
-		align-items: center;
-		background: rgba(10, 11, 16, 0.5);
-		padding: 10rpx 20rpx;
-		border-radius: 10rpx;
-		border: 1rpx solid rgba(140, 142, 154, 0.15);
-	}
-
-	.crypto-label {
 		font-size: 22rpx;
-		color: #7e8191;
-		font-weight: bold;
-		margin-right: 12rpx;
+		font-weight: 700;
+		color: #0f8f57;
+		text-transform: uppercase;
+		letter-spacing: 2rpx;
 	}
 
-	.crypto-value {
+	.title {
+		display: block;
+		font-size: 58rpx;
+		font-weight: 800;
+		line-height: 1.12;
+		color: #111827;
+	}
+
+	.desc {
+		display: block;
+		margin-bottom: 42rpx;
+		font-size: 28rpx;
+		line-height: 1.6;
+		color: #667085;
+	}
+
+	.add-btn {
+		width: 136rpx !important;
+		height: 72rpx;
+		margin: 8rpx 0 0;
+		border-radius: 16rpx;
+		background: #111827;
+		color: #ffffff;
 		font-size: 26rpx;
-		color: #e2e4f0;
-		font-family: monospace;
-		/* 等宽字体显得更极客 */
-	}
-
-	.copy-icon {
-		width: 24rpx;
-		height: 24rpx;
-		margin-left: 16rpx;
-		opacity: 0.6;
-	}
-
-	/* 右侧装饰徽章 */
-	.card-deco {
-		text-align: right;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		gap: 8px;
-	}
-
-	.deco-tag {
-		font-size: 18rpx;
-		font-weight: bold;
-		color: #00f0ff;
-		background: transparent;
-		border: 2rpx solid #00f0ff;
-		padding: 4rpx 12rpx;
-		border-radius: 6rpx;
-		letter-spacing: 1rpx;
-	}
-
-	/* 底部悬浮按钮 */
-	.action-btn {
-		position: relative;
-		z-index: 3;
-		margin-bottom: 30rpx;
-		background: transparent;
-		color: #00f0ff;
-		border: 2rpx solid #00f0ff;
-		border-radius: 20rpx;
-		height: 96rpx;
-		width: 100% !important;
+		font-weight: 800;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
 	}
 
-	.action-btn:active {
-		background: rgba(0, 240, 255, 0.1);
+	.add-btn::after,
+	.action-btn::after,
+	.mini-btn::after {
+		border: none;
 	}
 
-	.empty-state {
-		text-align: center;
-		padding-top: 200rpx;
-		color: #424559;
+	.list {
+		height: calc(100vh - 248rpx);
+	}
+
+	.wifi-card {
+		padding: 34rpx;
+		margin-bottom: 24rpx;
+		background: #ffffff;
+		border: 1rpx solid rgba(17, 24, 39, 0.08);
+		border-radius: 24rpx;
+		box-shadow: 0 18rpx 50rpx rgba(16, 24, 40, 0.07);
+	}
+
+	.card-top {
+		display: flex;
+		gap: 20rpx;
+		align-items: flex-start;
+	}
+
+	.status-dot {
+		width: 18rpx;
+		height: 18rpx;
+		margin-top: 13rpx;
+		border-radius: 50%;
+		background: #16a34a;
+		box-shadow: 0 0 0 8rpx rgba(22, 163, 74, 0.12);
+		flex-shrink: 0;
+	}
+
+	.wifi-info {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.wifi-name {
+		display: block;
+		font-size: 34rpx;
+		font-weight: 800;
+		color: #101828;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.password-row {
+		display: flex;
+		align-items: center;
+		gap: 14rpx;
+		margin-top: 18rpx;
+	}
+
+	.password-label {
+		padding: 6rpx 12rpx;
+		background: #ecfdf3;
+		border-radius: 999rpx;
+		font-size: 20rpx;
+		font-weight: 800;
+		color: #0f8f57;
+	}
+
+	.password-value {
+		max-width: 430rpx;
+		font-size: 26rpx;
+		color: #667085;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.card-actions {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16rpx;
+		margin-top: 32rpx;
+	}
+
+	.mini-btn {
+		height: 72rpx;
+		border-radius: 14rpx;
+		background: #f9fafb;
+		border: 1rpx solid rgba(17, 24, 39, 0.1);
+		color: #344054;
+		font-size: 25rpx;
+		font-weight: 800;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.mini-btn.primary {
+		background: #111827;
+		color: #ffffff;
+		border-color: #111827;
+	}
+
+	.empty-panel {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 64rpx 40rpx;
+		background: #ffffff;
+		border: 1rpx solid rgba(17, 24, 39, 0.08);
+		border-radius: 28rpx;
+		box-shadow: 0 24rpx 70rpx rgba(16, 24, 40, 0.08);
+	}
+
+	.empty-icon {
+		width: 112rpx;
+		height: 112rpx;
+		border-radius: 50%;
+		background: #ecfdf3;
+		color: #16a34a;
+		font-size: 58rpx;
+		font-weight: 800;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 30rpx;
+	}
+
+	.empty-title {
+		font-size: 36rpx;
+		font-weight: 800;
+		color: #101828;
+		margin-bottom: 14rpx;
+	}
+
+	.empty-desc {
 		font-size: 28rpx;
+		line-height: 1.6;
+		color: #667085;
+		text-align: center;
+		margin-bottom: 34rpx;
+	}
+
+	.action-btn {
+		width: 100% !important;
+		height: 96rpx;
+		border-radius: 18rpx;
+		font-size: 30rpx;
+		font-weight: 800;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+	}
+
+	.action-btn.primary {
+		background: #111827;
+		color: #ffffff;
+		box-shadow: 0 18rpx 38rpx rgba(17, 24, 39, 0.18);
+	}
+
+	.add-btn:active,
+	.action-btn:active,
+	.mini-btn:active {
+		transform: scale(0.98);
+		opacity: 0.9;
 	}
 </style>

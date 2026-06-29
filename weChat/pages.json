@@ -3,27 +3,26 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "首页"
+				"navigationBarTitleText": "创建wifi"
 			}
 		},
 		{
 			"path": "pages/list/list",
 			"style": {
-				"navigationBarTitleText": "我的wifi",
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "我的wifi"
 			}
 		},
 		{
 			"path": "pages/edit/edit",
 			"style": {
-				"navigationBarTitleText": "编辑wifi",
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "编辑wifi"
 			}
 		},
 		{
 			"path": "pages/connect/connect",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		}
 	],
