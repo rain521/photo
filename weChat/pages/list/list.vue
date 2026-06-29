@@ -138,6 +138,7 @@
 					}
 				} catch (e) {
 					// 无法读取错误详情，使用默认提示
+                    console.error(e);
 				}
 				uni.showToast({
 					title: errorMsg,
@@ -167,6 +168,7 @@
 				icon: 'success'
 			});
 		} catch (err) {
+            console.error('getQRCode error:', err); // 打印错误信息以便调试
 			hideLoadingSafe();
 			// 提取可读的错误信息
 			let errorMsg = '操作失败';
