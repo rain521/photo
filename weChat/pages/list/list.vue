@@ -34,6 +34,14 @@
 					<button class="mini-btn" @click="edit(item)">编辑</button>
 					<button class="mini-btn primary" @click="connect(item)">连接</button>
 					<button class="mini-btn" @click="getQRCode(item)">下载</button>
+					<button
+						class="mini-btn"
+						open-type="share"
+						:data-id="item.id"
+						:data-name="item.name"
+					>
+						分享
+					</button>
 				</view>
 			</view>
 		</scroll-view>
@@ -45,6 +53,7 @@
 		ref
 	} from 'vue';
 	import {
+		onShareAppMessage,
 		onShow
 	} from '@dcloudio/uni-app';
 	import {
@@ -193,6 +202,25 @@
 	function getErrorMessage(err = {}) {
 		return err.data && err.data.message ? err.data.message : '列表加载失败';
 	}
+
+	onShareAppMessage((res) => {
+		if (res.from === 'button' && res.target && res.target.dataset) {
+			const { id, name } = res.target.dataset;
+			if (id) {
+				return {
+					title: `连接 ${name || '我的'} WiFi`,
+					path: `/pages/connect/connect?id=${id}`,
+					imageUrl: '/static/share-wifi-connect.png'
+				};
+			}
+		}
+
+		return {
+			title: '创建 WiFi，一键分享连接信息',
+			path: '/pages/index/index',
+			imageUrl: '/static/share-wifi-connect.png'
+		};
+	});
 </script>
 
 <style>
@@ -335,7 +363,7 @@
 
 	.card-actions {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(4, 1fr);
 		gap: 16rpx;
 		margin-top: 32rpx;
 	}
