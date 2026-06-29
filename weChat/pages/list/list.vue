@@ -25,14 +25,14 @@
 						<text class="wifi-name">{{ item.name }}</text>
 						<view class="password-row">
 							<text class="password-label">密码</text>
-							<text class="password-value">{{ item.password }}</text>
+							<text class="password-value">********</text>
 						</view>
 					</view>
 				</view>
 
 				<view class="card-actions">
 					<button class="mini-btn" @click="edit(item)">编辑</button>
-					<button class="mini-btn primary" @click="connect(item)">连接</button>
+					<button class="mini-btn" @click="connect(item)">连接</button>
 					<button class="mini-btn" @click="getQRCode(item)">下载</button>
 					<button
 						class="mini-btn"
@@ -101,36 +101,55 @@
 		});
 	}
 
+	function hideLoadingSafe() {
+		uni.hideLoading({ fail: () => {} });
+	}
+
 	async function getQRCode(item) {
+		uni.showLoading({
+			title: '生成中...',
+			mask: true
+		});
+
 		try {
 			const baseUrl = app.globalData.requestUrl + '/api/wifi/qrcode';
 			const scene = `id=${item.id}`;
 			const page = 'pages/connect/connect';
-
-			uni.showLoading({
-				title: '生成中...'
-			});
 
 			const token = uni.getStorageSync('token') || '';
 			const downloadRes = await uni.downloadFile({
 				url: `${baseUrl}?scene=${scene}&page=${page}`,
 				header: {
 					Authorization: `Bearer ${token}`
-				}
+				},
+				timeout: 15000
 			});
 
-			uni.hideLoading();
-
 			if (downloadRes.statusCode !== 200) {
+				hideLoadingSafe();
+				// 尝试读取临时文件中的后端错误信息
+				let errorMsg = '图片下载失败';
+				try {
+					const fs = uni.getFileSystemManager();
+					const errData = fs.readFileSync(downloadRes.tempFilePath, 'utf-8');
+					const parsed = JSON.parse(errData);
+					if (parsed.message) {
+						errorMsg = parsed.message;
+					}
+				} catch (e) {
+					// 无法读取错误详情，使用默认提示
+				}
 				uni.showToast({
-					title: '图片下载失败',
-					icon: 'none'
+					title: errorMsg,
+					icon: 'none',
+					duration: 2500
 				});
 				return;
 			}
 
 			const authResult = await requestSaveImageAuth();
 			if (!authResult) {
+				hideLoadingSafe();
 				uni.showToast({
 					title: '未授权保存到相册',
 					icon: 'none'
@@ -142,27 +161,47 @@
 				filePath: downloadRes.tempFilePath
 			});
 
+			hideLoadingSafe();
 			uni.showToast({
 				title: '已保存到相册',
 				icon: 'success'
 			});
 		} catch (err) {
-			uni.hideLoading();
-			if (err.errMsg && err.errMsg.includes('auth deny')) {
-				uni.showModal({
-					title: '提示',
-					content: '需要授权保存到相册',
-					success: (res) => {
-						if (res.confirm) {
-							uni.openSetting();
+			hideLoadingSafe();
+			// 提取可读的错误信息
+			let errorMsg = '操作失败';
+			if (err.errMsg) {
+				if (err.errMsg.includes('auth deny')) {
+					uni.showModal({
+						title: '提示',
+						content: '需要授权保存到相册',
+						success: (res) => {
+							if (res.confirm) {
+								uni.openSetting();
+							}
 						}
+					});
+					return;
+				}
+				// 映射常见系统错误到用户友好提示
+				if (err.errMsg.includes('timeout') || err.errMsg.includes('time out')) {
+					errorMsg = '网络超时，请重试';
+				} else if (err.errMsg.includes('fail url not in domain list')) {
+					errorMsg = '下载域名未配置，请联系管理员';
+				} else if (err.errMsg.includes('file not found') || err.errMsg.includes('404')) {
+					errorMsg = '二维码生成失败，请稍后重试';
+				} else {
+					// 兜底：提取 errMsg 中人类可读的部分
+					const cleaned = err.errMsg.replace(/^.*?:fail\s*/, '');
+					if (cleaned && cleaned.length < 30) {
+						errorMsg = cleaned;
 					}
-				});
-				return;
+				}
 			}
 			uni.showToast({
-				title: '操作失败',
-				icon: 'none'
+				title: errorMsg,
+				icon: 'none',
+				duration: 2500
 			});
 		}
 	}

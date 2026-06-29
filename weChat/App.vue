@@ -12,8 +12,8 @@
 		globalData: {
 			token: null,
 			user: null,
-			requestUrl: "https://www.cytp.cc",
-			// requestUrl: "http://10.0.0.16:3000",
+			// requestUrl: "https://www.cytp.cc",
+			requestUrl: "http://10.0.0.16:3000",
 		}
 	}
 </script>

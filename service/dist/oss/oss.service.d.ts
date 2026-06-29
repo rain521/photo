@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 export declare class OssService {
     private configService;
+    private readonly logger;
     constructor(configService: ConfigService);
     private getClient;
     generateUploadToken(dir: string | null): Promise<{

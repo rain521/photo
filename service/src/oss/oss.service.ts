@@ -8,6 +8,8 @@ const { policy2Str } = require('ali-oss/lib/common/utils/policy2Str');
 
 @Injectable()
 export class OssService {
+    private readonly logger = new Logger(OssService.name);
+
     constructor(private configService: ConfigService) { }
     private getClient() {
         // 规范配置值，去除可能的引号并确保 region 格式正确
@@ -38,8 +40,10 @@ export class OssService {
             accessKeySecret: this.configService.get('KEY_SECRET') // 从环境变量中获取RAM用户的AccessKey Secret
         });
 
+        this.logger.log(`开始生成STS上传凭证, dir=${dir}`);
         // 调用assumeRole接口获取STS临时访问凭证
         const result = await sts.assumeRole(process.env.OSS_STS_ROLE_ARN, '', '3600', 'rainPhotoAll'); // 从环境变量中获取RAM角色ARN，并设置临时访问凭证有效期为3600秒，角色会话名称为yourRoleSessionName可自定义
+        this.logger.log('STS临时凭证获取成功');
 
         // 提取临时访问凭证中的AccessKeyId、AccessKeySecret和SecurityToken
         const accessKeyId = result.credentials.AccessKeyId;
@@ -138,6 +142,7 @@ export class OssService {
         const client = this.getClient();
         const uploaded = [] as Array<{ name: string; url: string }>;
 
+        this.logger.log(`开始批量上传: targetDir=${targetDir}, 文件数=${files.length}`);
         for (const file of files) {
             // file.originalname 可能包含前端传来的相对路径（如使用 webkitRelativePath 上传）
             let objectName = file.originalname || file.filename;
@@ -155,6 +160,7 @@ export class OssService {
             uploaded.push({ name: objectName, url: result.url });
         }
 
+        this.logger.log(`批量上传完成: 成功=${uploaded.length}/${files.length}`);
         return { uploaded };
     }
 
@@ -164,8 +170,10 @@ export class OssService {
      */
     async deleteObject(objectName: string) {
         if (!objectName) throw new Error('objectName is required');
+        this.logger.log(`删除单个OSS对象: ${objectName}`);
         const client = this.getClient();
         const result = await client.delete(objectName);
+        this.logger.log(`OSS对象已删除: ${objectName}`);
         return result;
     }
 
@@ -175,8 +183,10 @@ export class OssService {
      */
     async deleteObjects(objectNames: string[]) {
         if (!Array.isArray(objectNames) || objectNames.length === 0) throw new Error('objectNames must be a non-empty array');
+        this.logger.log(`批量删除OSS对象: 数量=${objectNames.length}`);
         const client = this.getClient();
         const result = await client.deleteMulti(objectNames);
+        this.logger.log(`批量删除完成: ${objectNames.length}个对象`);
         return result;
     }
 

@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var OssService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OssService = void 0;
 const common_1 = require("@nestjs/common");
@@ -17,8 +18,9 @@ const { STS } = require('ali-oss');
 const { getCredential } = require('ali-oss/lib/common/signUtils');
 const { getStandardRegion } = require('ali-oss/lib/common/utils/getStandardRegion');
 const { policy2Str } = require('ali-oss/lib/common/utils/policy2Str');
-let OssService = class OssService {
+let OssService = OssService_1 = class OssService {
     configService;
+    logger = new common_1.Logger(OssService_1.name);
     constructor(configService) {
         this.configService = configService;
     }
@@ -43,7 +45,9 @@ let OssService = class OssService {
             accessKeyId: this.configService.get('KEY_ID'),
             accessKeySecret: this.configService.get('KEY_SECRET')
         });
+        this.logger.log(`开始生成STS上传凭证, dir=${dir}`);
         const result = await sts.assumeRole(process.env.OSS_STS_ROLE_ARN, '', '3600', 'rainPhotoAll');
+        this.logger.log('STS临时凭证获取成功');
         const accessKeyId = result.credentials.AccessKeyId;
         const accessKeySecret = result.credentials.AccessKeySecret;
         const securityToken = result.credentials.SecurityToken;
@@ -111,6 +115,7 @@ let OssService = class OssService {
     async uploadFolder(targetDir, files) {
         const client = this.getClient();
         const uploaded = [];
+        this.logger.log(`开始批量上传: targetDir=${targetDir}, 文件数=${files.length}`);
         for (const file of files) {
             let objectName = file.originalname || file.filename;
             objectName = objectName.replace(/\\/g, '/');
@@ -121,25 +126,30 @@ let OssService = class OssService {
             const result = await client.put(objectName, file.buffer);
             uploaded.push({ name: objectName, url: result.url });
         }
+        this.logger.log(`批量上传完成: 成功=${uploaded.length}/${files.length}`);
         return { uploaded };
     }
     async deleteObject(objectName) {
         if (!objectName)
             throw new Error('objectName is required');
+        this.logger.log(`删除单个OSS对象: ${objectName}`);
         const client = this.getClient();
         const result = await client.delete(objectName);
+        this.logger.log(`OSS对象已删除: ${objectName}`);
         return result;
     }
     async deleteObjects(objectNames) {
         if (!Array.isArray(objectNames) || objectNames.length === 0)
             throw new Error('objectNames must be a non-empty array');
+        this.logger.log(`批量删除OSS对象: 数量=${objectNames.length}`);
         const client = this.getClient();
         const result = await client.deleteMulti(objectNames);
+        this.logger.log(`批量删除完成: ${objectNames.length}个对象`);
         return result;
     }
 };
 exports.OssService = OssService;
-exports.OssService = OssService = __decorate([
+exports.OssService = OssService = OssService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [config_1.ConfigService])
 ], OssService);

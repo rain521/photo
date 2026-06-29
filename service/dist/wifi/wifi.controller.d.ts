@@ -3,6 +3,7 @@ import { WifiService } from './wifi.service';
 import { Wifi } from '../interface/wifi';
 export declare class WifiController {
     private readonly wifiService;
+    private readonly logger;
     constructor(wifiService: WifiService);
     create(createWifiDto: Wifi): Promise<import("../entities/wifi.entity").Wifi>;
     getQrcode(page: string, scene: string, res: Response): Promise<void>;

@@ -11,13 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var WifiController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WifiController = void 0;
 const common_1 = require("@nestjs/common");
 const wifi_service_1 = require("./wifi.service");
 const public_1 = require("../utils/public");
-let WifiController = class WifiController {
+let WifiController = WifiController_1 = class WifiController {
     wifiService;
+    logger = new common_1.Logger(WifiController_1.name);
     constructor(wifiService) {
         this.wifiService = wifiService;
     }
@@ -30,7 +32,7 @@ let WifiController = class WifiController {
         return this.wifiService.create(createWifiDto);
     }
     async getQrcode(page, scene, res) {
-        console.log(page, scene);
+        this.logger.log(`生成小程序码: page=${page}, scene=${scene}`);
         const buffer = await this.wifiService.createWxaQrcode(page, scene);
         res.setHeader('Content-Type', 'image/png');
         res.setHeader('Content-Length', buffer.length);
@@ -105,7 +107,7 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], WifiController.prototype, "update", null);
-exports.WifiController = WifiController = __decorate([
+exports.WifiController = WifiController = WifiController_1 = __decorate([
     (0, common_1.Controller)('wifi'),
     __metadata("design:paramtypes", [wifi_service_1.WifiService])
 ], WifiController);

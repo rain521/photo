@@ -11,6 +11,7 @@ import {
     ParseUUIDPipe,
     Put,
     Res,
+    Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { WifiService } from './wifi.service';
@@ -19,6 +20,8 @@ import { Public } from 'src/utils/public';
 
 @Controller('wifi')
 export class WifiController {
+    private readonly logger = new Logger(WifiController.name);
+
     constructor(private readonly wifiService: WifiService) {}
 
     @Post()
@@ -40,7 +43,7 @@ export class WifiController {
         @Query('scene') scene: string,
         @Res() res: Response,
     ) {
-        console.log(page, scene); // 获取参数
+        this.logger.log(`生成小程序码: page=${page}, scene=${scene}`);
         const buffer = await this.wifiService.createWxaQrcode(page, scene);
         res.setHeader('Content-Type', 'image/png');
         res.setHeader('Content-Length', buffer.length);
