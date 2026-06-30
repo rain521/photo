@@ -1,0 +1,40 @@
+{
+  "skill": "wifi",
+  "capabilities": [
+    {
+      "name": "createWifi",
+      "source": {
+        "page": "pages/index/index.vue",
+        "api": "POST /api/wifi",
+        "method": "POST"
+      },
+      "auth": "wx.login + POST /api/auth/loginWx",
+      "input": {
+        "name": "string",
+        "password": "string"
+      },
+      "output": {
+        "wifi": "object",
+        "message": "string"
+      },
+      "componentPath": "components/create-result/index"
+    },
+    {
+      "name": "listMyWifi",
+      "source": {
+        "page": "pages/list/list.vue",
+        "api": "GET /api/wifi/getAll",
+        "method": "GET"
+      },
+      "auth": "wx.login + POST /api/auth/loginWx",
+      "input": {},
+      "output": {
+        "items": "array",
+        "total": "number"
+      },
+      "componentPath": "components/wifi-list/index"
+    }
+  ],
+  "storageKeys": [],
+  "dependencyGraph": "createWifi -> listMyWifi; listMyWifi has no required input and may be called independently."
+}

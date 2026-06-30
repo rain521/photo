@@ -1,0 +1,174 @@
+/* ratio=1:1，依据：WiFi 列表属于多条结果展示。
+ * 色源：app.json window.backgroundColor #F8F8F8 + pages/list/list.vue 页面主色 #0f8f57、文字色 #111827。
+ * 暗黑：#F8F8F8 降明度到 #181818，描边 #E5E7EB 降为 #3A3A3C，主文字翻转为 rgba(255,255,255,0.9)。
+ */
+.wifi-card {
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+  padding: 3.2vw;
+  border-radius: 1.07vw;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 4.27vw;
+}
+
+.title-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.eyebrow {
+  font-size: 3.2vw;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #0f8f57;
+}
+
+.title {
+  margin-top: 1vw;
+  font-size: 4.53vw;
+  line-height: 1.25;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.count {
+  font-size: 3.2vw;
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  padding: 4.27vw 0;
+}
+
+.empty-title {
+  font-size: 4vw;
+  line-height: 1.35;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.empty-desc {
+  margin-top: 2vw;
+  font-size: 3.2vw;
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.wifi-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 2.13vw 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #eef2f6;
+}
+
+.status-dot {
+  width: 2.13vw;
+  height: 2.13vw;
+  margin-right: 3.2vw;
+  border-radius: 1.07vw;
+  background-color: #0f8f57;
+}
+
+.wifi-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.wifi-name {
+  font-size: 4vw;
+  line-height: 1.35;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wifi-password {
+  margin-top: 1vw;
+  font-size: 3.2vw;
+  line-height: 1.35;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.omitted {
+  margin-top: 2vw;
+  font-size: 3.2vw;
+  line-height: 1.35;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 4.27vw;
+}
+
+.primary-btn {
+  box-sizing: border-box;
+  min-width: 28vw;
+  height: 10.67vw;
+  padding: 0 3.2vw;
+  border-radius: 1.07vw;
+  border: 1px solid #0f8f57;
+  background-color: #0f8f57;
+  color: #ffffff;
+  font-size: 4vw;
+  line-height: 10.67vw;
+  font-weight: 500;
+}
+
+.btn-hover {
+  opacity: 0.72;
+}
+
+@media (prefers-color-scheme: dark) {
+  .wifi-card {
+    border-color: #3a3a3c;
+    background-color: #181818;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .title,
+  .empty-title,
+  .wifi-name {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .count,
+  .empty-desc,
+  .wifi-password,
+  .omitted {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .wifi-item {
+    border-bottom-color: #3a3a3c;
+  }
+}

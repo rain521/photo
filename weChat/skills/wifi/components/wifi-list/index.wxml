@@ -1,0 +1,29 @@
+<view class="wifi-card">
+  <view class="header">
+    <view class="title-wrap">
+      <text class="eyebrow">WiFi Studio</text>
+      <text class="title">我的 WiFi</text>
+    </view>
+    <text class="count">共 {{total}} 个</text>
+  </view>
+
+  <view wx:if="{{total === 0}}" class="empty">
+    <text class="empty-title">还没有 WiFi</text>
+    <text class="empty-desc">创建第一个 WiFi 后，可以在这里查看。</text>
+  </view>
+
+  <view wx:else class="list">
+    <view wx:for="{{visibleItems}}" wx:key="id" class="wifi-item">
+      <view class="status-dot"></view>
+      <view class="wifi-info">
+        <text class="wifi-name">{{item.name}}</text>
+        <text class="wifi-password">密码 {{item.maskedPassword}}</text>
+      </view>
+    </view>
+    <text wx:if="{{omittedCount > 0}}" class="omitted">还有 {{omittedCount}} 个未展示</text>
+  </view>
+
+  <view class="actions">
+    <button class="primary-btn" hover-class="btn-hover" bindtap="onTapCreate">创建 WiFi</button>
+  </view>
+</view>

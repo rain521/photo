@@ -51,10 +51,20 @@
     /* 小程序特有相关 */
     "mp-weixin" : {
         "appid" : "wxcccbdeca780bb053",
+        "lazyCodeLoading" : "requiredComponents",
         "setting" : {
             "urlCheck" : false
         },
-        "usingComponents" : true
+        "usingComponents" : true,
+        "agent" : {
+            "skills" : [
+                {
+                    "name" : "wifi",
+                    "description" : "创建 WiFi 并查看我的 WiFi 列表",
+                    "path" : "skills/wifi"
+                }
+            ]
+        }
     },
     "mp-alipay" : {
         "usingComponents" : true

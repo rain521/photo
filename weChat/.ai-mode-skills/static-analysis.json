@@ -1,0 +1,44 @@
+{
+  "projectPath": "E:/project/photo/weChat",
+  "targetCapabilities": [
+    {
+      "functionName": "创建wifi",
+      "pages": ["pages/index/index"],
+      "sourceApis": ["POST /api/wifi", "GET /api/user/getUser", "POST /api/auth/loginWx"],
+      "suggestedAtomicInterfaces": ["createWifi"],
+      "needsComponent": true,
+      "confidence": "high",
+      "requiresProbe": false,
+      "dependencyNotes": [
+        "源页面 pages/index/index.vue save() 先校验 name/password，再通过 requestWithAuth 获取用户资料并 POST /api/wifi。",
+        "鉴权来自 utils/request.js：wx.login -> POST /api/auth/loginWx -> access_token -> Authorization: Bearer <token>。"
+      ]
+    },
+    {
+      "functionName": "我的wifi",
+      "pages": ["pages/list/list"],
+      "sourceApis": ["GET /api/wifi/getAll", "POST /api/auth/loginWx"],
+      "suggestedAtomicInterfaces": ["listMyWifi"],
+      "needsComponent": true,
+      "confidence": "high",
+      "requiresProbe": false,
+      "dependencyNotes": [
+        "源页面 pages/list/list.vue onShow() 调 get()，通过 requestWithAuth GET /api/wifi/getAll。",
+        "列表项源字段按页面使用保留 id/name/password。"
+      ]
+    }
+  ],
+  "baseUrl": "https://www.cytp.cc",
+  "auth": {
+    "requiresLogin": true,
+    "loginJsapi": "wx.login",
+    "loginApi": "POST /api/auth/loginWx",
+    "tokenField": "access_token",
+    "header": "Authorization: Bearer <token>"
+  },
+  "jsapiWhitelistCheck": {
+    "apiSide": ["wx.modelContext.registerAPI", "wx.login", "wx.request"],
+    "componentSide": ["wx.modelContext.getContext", "wx.modelContext.getViewContext"],
+    "nonMigratedRemoved": ["uni.showToast", "uni.navigateTo", "uni.showLoading", "uni.hideLoading"]
+  }
+}

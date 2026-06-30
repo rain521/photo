@@ -17,34 +17,36 @@
 			<button class="action-btn primary" @click="goCreate">立即创建</button>
 		</view>
 
-		<scroll-view v-else scroll-y class="list">
-			<view class="wifi-card" v-for="item in wifiList" :key="item.id">
-				<view class="card-top">
-					<view class="status-dot"></view>
-					<view class="wifi-info">
-						<text class="wifi-name">{{ item.name }}</text>
-						<view class="password-row">
-							<text class="password-label">密码</text>
-							<text class="password-value">********</text>
+		<view v-else class="list-wrap">
+			<scroll-view scroll-y class="list">
+				<view class="wifi-card" v-for="item in wifiList" :key="item.id">
+					<view class="card-top">
+						<view class="status-dot"></view>
+						<view class="wifi-info">
+							<text class="wifi-name">{{ item.name }}</text>
+							<view class="password-row">
+								<text class="password-label">密码</text>
+								<text class="password-value">********</text>
+							</view>
 						</view>
 					</view>
-				</view>
 
-				<view class="card-actions">
-					<button class="mini-btn" @click="edit(item)">编辑</button>
-					<button class="mini-btn" @click="connect(item)">连接</button>
-					<button class="mini-btn" @click="getQRCode(item)">下载</button>
-					<button
-						class="mini-btn"
-						open-type="share"
-						:data-id="item.id"
-						:data-name="item.name"
-					>
-						分享
-					</button>
+					<view class="card-actions">
+						<button class="mini-btn" @click="edit(item)">编辑</button>
+						<button class="mini-btn" @click="connect(item)">连接</button>
+						<button class="mini-btn" @click="getQRCode(item)">下载</button>
+						<button
+							class="mini-btn"
+							open-type="share"
+							:data-id="item.id"
+							:data-name="item.name"
+						>
+							分享
+						</button>
+					</view>
 				</view>
-			</view>
-		</scroll-view>
+			</scroll-view>
+		</view>
 	</view>
 </template>
 
@@ -270,13 +272,15 @@
 	}
 
 	.page {
-		min-height: 100vh;
+		height: 100vh;
 		padding: 88rpx 40rpx 56rpx;
 		box-sizing: border-box;
 		background:
 			linear-gradient(180deg, rgba(34, 197, 94, 0.12), rgba(246, 247, 249, 0) 34%),
 			#f6f7f9;
 		color: #14161a;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.hero {
@@ -333,8 +337,13 @@
 		border: none;
 	}
 
+	.list-wrap {
+		flex: 1;
+		overflow: hidden;
+	}
+
 	.list {
-		height: calc(100vh - 248rpx);
+		height: 100%;
 	}
 
 	.wifi-card {

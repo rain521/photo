@@ -26,6 +26,13 @@
 			}
 		}
 	],
+	"subPackages": [
+		{
+			"root": "skills",
+			"independent": true,
+			"pages": []
+		}
+	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

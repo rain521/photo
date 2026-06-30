@@ -1,0 +1,107 @@
+{
+  "apis": [
+    {
+      "name": "createWifi",
+      "description": "根据用户提供的 WiFi 名称和密码创建新的 WiFi 记录。接口会先通过 wx.login 换取 token，再读取当前用户信息，最后调用后端 POST /api/wifi 保存记录。创建成功后可继续调用 listMyWifi 查看当前账号的 WiFi 列表。",
+      "_meta": {
+        "ui": {
+          "componentPath": "components/create-result/index"
+        }
+      },
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "WiFi 名称"
+          },
+          "password": {
+            "type": "string",
+            "description": "WiFi 密码"
+          }
+        },
+        "required": ["name", "password"],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "wifi": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": ["string", "number", "null"]
+              },
+              "name": {
+                "type": "string"
+              },
+              "userId": {
+                "type": ["string", "number", "null"]
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "listMyWifi",
+      "description": "查询当前登录用户创建过的 WiFi 列表。接口会先通过 wx.login 换取 token，再调用后端 GET /api/wifi/getAll，并返回 WiFi 的 id、名称和密码字段供小程序 AI 展示。",
+      "_meta": {
+        "ui": {
+          "componentPath": "components/wifi-list/index"
+        }
+      },
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": ["string", "number", "null"]
+                },
+                "name": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  ],
+  "components": [
+    {
+      "path": "components/create-result/index",
+      "relatedPage": "/pages/index/index"
+    },
+    {
+      "path": "components/wifi-list/index",
+      "relatedPage": "/pages/list/list"
+    }
+  ]
+}
